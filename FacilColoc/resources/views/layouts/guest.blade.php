@@ -1,30 +1,72 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EasyColoc</title>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Syne:wght@500;600;700&display=swap"
+          rel="stylesheet">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --panel: #ffffff;
+            --card: #ffffff;
+            --border: #e5e9f2;
+            --text: #0f172a;
+            --muted: #5b6472;
+            --accent: #1dd675;
+        }
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+        body {
+            margin: 0;
+            font-family: "Manrope", system-ui, -apple-system, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(1200px 600px at 15% -20%, #dfe7f3 0%, transparent 60%),
+                radial-gradient(800px 500px at 85% -10%, #e8f3e8 0%, transparent 55%),
+                var(--bg);
+            min-height: 100vh;
+        }
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
-        </div>
-    </body>
+        .brand {
+            font-family: "Syne", sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-size: 1.6rem;
+            color: var(--text);
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            color: var(--text);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            border: none;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .btn-accent:hover {
+            background: #17c26b;
+            color: #0f172a;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container py-5">
+    <div class="text-center mb-4 brand">EasyColoc</div>
+    @yield('content')
+</div>
+
+</body>
 </html>

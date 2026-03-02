@@ -4,7 +4,12 @@
 
 <div class="container">
 
-    <h2 class="mb-4">Mes colocations</h2>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="mb-0">Mes colocations</h2>
+        <a href="{{ route('colocations.create') }}" class="btn btn-accent">
+            + Créer une colocation
+        </a>
+    </div>
 
     @if (session('error'))
         <div class="alert alert-danger">
@@ -18,20 +23,26 @@
         </div>
     @endif
 
-    <a href="{{ route('colocations.create') }}"
-       class="btn btn-primary mb-3">
-        + Créer une colocation
-    </a>
-
-    <div class="list-group">
+    <div class="row g-3">
         @forelse($colocations as $colocation)
-            <a href="{{ route('colocations.show', $colocation) }}"
-               class="list-group-item list-group-item-action">
-                {{ $colocation->name }}
-            </a>
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ route('colocations.show', $colocation) }}" class="text-decoration-none">
+                    <div class="card p-3 h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <strong>{{ $colocation->name }}</strong>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                        <div class="text-muted small mt-2">
+                            Accéder à la colocation
+                        </div>
+                    </div>
+                </a>
+            </div>
         @empty
-            <div class="alert alert-info mb-0">
-                Vous n'avez encore aucune colocation.
+            <div class="col-12">
+                <div class="card p-4 text-center">
+                    <div class="text-muted">Vous n'avez encore aucune colocation.</div>
+                </div>
             </div>
         @endforelse
     </div>
