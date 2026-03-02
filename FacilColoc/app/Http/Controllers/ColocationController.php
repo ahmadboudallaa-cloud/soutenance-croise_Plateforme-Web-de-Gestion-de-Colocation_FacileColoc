@@ -8,6 +8,18 @@ use Illuminate\Support\Facades\Auth;
 
 class ColocationController extends Controller
 {
+    private function ensureOwner(Colocation $colocation): void
+    {
+        $isOwner = $colocation->users()
+            ->where('users.id', Auth::id())
+            ->wherePivot('role', 'owner')
+            ->wherePivotNull('left_at')
+            ->exists();
+
+        if (!$isOwner) {
+            abort(403);
+        }
+    }
     public function index()
     {
         $colocations = Auth::user()
@@ -23,6 +35,13 @@ class ColocationController extends Controller
     public function create()
     {
         return view('colocations.create');
+    }
+
+    public function edit(Colocation $colocation)
+    {
+        $this->ensureOwner($colocation);
+
+        return view('colocations.edit', compact('colocation'));
     }
 
     public function store(Request $request)
@@ -60,6 +79,25 @@ class ColocationController extends Controller
         ]);
 
         return redirect()->route('colocations.show', $colocation);
+    }
+
+    public function update(Request $request, Colocation $colocation)
+    {
+        $this->ensureOwner($colocation);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $colocation->update([
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+
+        return redirect()
+            ->route('colocations.show', $colocation)
+            ->with('success', 'Colocation modifiée.');
     }
 
     public function show(Colocation $colocation)
@@ -138,15 +176,7 @@ class ColocationController extends Controller
 
     public function cancel(Colocation $colocation)
     {
-        $isOwner = $colocation->users()
-            ->where('users.id', Auth::id())
-            ->wherePivot('role', 'owner')
-            ->wherePivotNull('left_at')
-            ->exists();
-
-        if (!$isOwner) {
-            abort(403);
-        }
+        $this->ensureOwner($colocation);
 
         if ($colocation->status !== 'active') {
             return redirect()->route('dashboard')
@@ -204,15 +234,7 @@ class ColocationController extends Controller
 
     public function removeMember(Colocation $colocation, \App\Models\User $user)
     {
-        $isOwner = $colocation->users()
-            ->where('users.id', Auth::id())
-            ->wherePivot('role', 'owner')
-            ->wherePivotNull('left_at')
-            ->exists();
-
-        if (!$isOwner) {
-            abort(403);
-        }
+        $this->ensureOwner($colocation);
 
         $member = $colocation->users()
             ->where('users.id', $user->id)
@@ -255,6 +277,37 @@ class ColocationController extends Controller
             ->with('success', 'Membre retiré.');
     }
 
+    public function transferOwner(Colocation $colocation, \App\Models\User $user)
+    {
+        $this->ensureOwner($colocation);
+
+        $member = $colocation->users()
+            ->where('users.id', $user->id)
+            ->wherePivotNull('left_at')
+            ->first();
+
+        if (!$member) {
+            return redirect()->route('colocations.show', $colocation)
+                ->with('error', 'Membre introuvable.');
+        }
+
+        if (($member->pivot->role ?? 'member') === 'owner') {
+            return redirect()->route('colocations.show', $colocation)
+                ->with('error', 'Ce membre est déjà owner.');
+        }
+
+        $colocation->users()->updateExistingPivot(Auth::id(), [
+            'role' => 'member',
+        ]);
+
+        $colocation->users()->updateExistingPivot($user->id, [
+            'role' => 'owner',
+        ]);
+
+        return redirect()->route('colocations.show', $colocation)
+            ->with('success', 'Rôle owner transféré.');
+    }
+
     private function calculateBalances($members, $expenses, $payments): array
     {
         $totalExpenses = $expenses->sum('amount');
@@ -276,7 +329,7 @@ class ColocationController extends Controller
                 ->where('payer_id', $member->id)
                 ->sum('amount');
 
-            $paid = $paidExpenses + $received - $sent;
+            $paid = $paidExpenses + $sent - $received;
 
             $balances[$member->id] = [
                 'user' => $member,

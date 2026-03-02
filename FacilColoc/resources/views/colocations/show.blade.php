@@ -34,13 +34,19 @@
     @endif
 
     @if ($isOwner)
-        <form method="POST" action="{{ route('colocations.cancel', $colocation->id) }}" class="mb-3">
-            @csrf
-            @method('PATCH')
-            <button class="btn btn-outline-danger">
-                Annuler la colocation
-            </button>
-        </form>
+        <div class="d-flex gap-2 mb-3">
+            <a href="{{ route('colocations.edit', $colocation->id) }}"
+               class="btn btn-outline-primary">
+                Modifier la colocation
+            </a>
+            <form method="POST" action="{{ route('colocations.cancel', $colocation->id) }}">
+                @csrf
+                @method('PATCH')
+                <button class="btn btn-outline-danger">
+                    Annuler la colocation
+                </button>
+            </form>
+        </div>
     @else
         <form method="POST" action="{{ route('colocations.leave', $colocation->id) }}" class="mb-3">
             @csrf
@@ -64,10 +70,16 @@
                     <span class="text-muted ms-2">Réputation : {{ $member->reputation ?? 0 }}</span>
                 </div>
                 @if ($isOwner && ($member->pivot->role ?? 'member') !== 'owner')
-                    <form method="POST" action="{{ route('colocations.members.remove', [$colocation->id, $member->id]) }}">
-                        @csrf
-                        <button class="btn btn-sm btn-outline-danger">Retirer</button>
-                    </form>
+                    <div class="d-flex gap-2">
+                        <form method="POST" action="{{ route('colocations.members.transfer', [$colocation->id, $member->id]) }}">
+                            @csrf
+                            <button class="btn btn-sm btn-outline-primary">Transférer owner</button>
+                        </form>
+                        <form method="POST" action="{{ route('colocations.members.remove', [$colocation->id, $member->id]) }}">
+                            @csrf
+                            <button class="btn btn-sm btn-outline-danger">Retirer</button>
+                        </form>
+                    </div>
                 @endif
             </li>
         @endforeach
@@ -118,7 +130,16 @@
                             {{ $invitation->email }}
                             <span class="text-muted ms-2">{{ $invitation->created_at->format('d/m/Y H:i') }}</span>
                         </div>
-                        <span class="badge bg-warning text-dark">{{ $invitation->status }}</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-warning text-dark">{{ $invitation->status }}</span>
+                            <form method="POST" action="{{ route('colocations.invitations.destroy', [$colocation->id, $invitation->id]) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Supprimer
+                                </button>
+                            </form>
+                        </div>
                     </li>
                 @endforeach
             </ul>
@@ -152,12 +173,14 @@
         </span>
     </div>
 
-    <table class="table table-striped">
+    <div class="card p-3">
+    <table class="table table-striped mb-0">
         <tr>
             <th>Titre</th>
             <th>Montant</th>
             <th>Date</th>
             <th>Payé par</th>
+            <th class="text-end">Actions</th>
         </tr>
 
         @foreach($expenses as $expense)
@@ -166,9 +189,23 @@
                 <td>{{ number_format($expense->amount,2) }} €</td>
                 <td>{{ $expense->expense_date }}</td>
                 <td>{{ $expense->payer->name ?? '-' }}</td>
+                <td class="text-end">
+                    <a href="{{ route('expenses.edit', [$colocation->id, $expense->id]) }}"
+                       class="btn btn-sm btn-outline-primary">
+                        Modifier
+                    </a>
+                    <form method="POST" action="{{ route('expenses.destroy', [$colocation->id, $expense->id]) }}" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-sm btn-outline-danger">
+                            Supprimer
+                        </button>
+                    </form>
+                </td>
             </tr>
         @endforeach
     </table>
+    </div>
 
     <hr>
 
@@ -196,7 +233,7 @@
                 {{ number_format($s['amount'],2) }} €
             </div>
 
-            <form method="POST" action="{{ route('payments.store') }}">
+            <form method="POST" action="{{ route('payments.store') }}" onsubmit="this.querySelector('button').disabled = true;">
                 @csrf
                 <input type="hidden" name="colocation_id" value="{{ $colocation->id }}">
                 <input type="hidden" name="payer_id" value="{{ $s['from']->id }}">
@@ -216,7 +253,8 @@
     <h4>Historique des paiements</h4>
 
     @if ($payments->count())
-        <table class="table">
+        <div class="card p-3">
+        <table class="table mb-0">
             <tr>
                 <th>Date</th>
                 <th>Payeur</th>
@@ -232,6 +270,7 @@
                 </tr>
             @endforeach
         </table>
+        </div>
     @else
         <div class="alert alert-light">Aucun paiement enregistré.</div>
     @endif
