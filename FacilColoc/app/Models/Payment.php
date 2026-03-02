@@ -8,19 +8,23 @@ class Payment extends Model
 {
     protected $fillable = [
         'colocation_id',
-        'from_user_id',
-        'to_user_id',
-        'amount',
-        'payment_date'
+        'payer_id',
+        'receiver_id',
+        'amount'
     ];
 
-    public function fromUser()
+    public function colocation()
     {
-        return $this->belongsTo(User::class,'from_user_id');
+        return $this->belongsTo(Colocation::class);
     }
 
-    public function toUser()
+    public function payer()
     {
-        return $this->belongsTo(User::class,'to_user_id');
+        return $this->belongsTo(User::class,'payer_id');
+    }
+
+    public function receiver()
+    {
+        return $this->belongsTo(User::class,'receiver_id');
     }
 }
