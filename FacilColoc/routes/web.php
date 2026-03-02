@@ -35,7 +35,6 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
 
         $colocations = auth()->user()
             ->colocations()
-            ->where('colocations.status', 'active')
             ->wherePivotNull('left_at')
             ->orderBy('colocations.created_at', 'desc')
             ->get();
@@ -55,6 +54,11 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
         '/colocations/{colocation}/cancel',
         [ColocationController::class, 'cancel']
     )->name('colocations.cancel');
+
+    Route::patch(
+        '/colocations/{colocation}/deactivate',
+        [ColocationController::class, 'deactivate']
+    )->name('colocations.deactivate');
 
     Route::post(
         '/colocations/{colocation}/leave',
@@ -179,5 +183,11 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
 
             Route::post('/users/{user}/unban', [AdminController::class, 'unban'])
                 ->name('users.unban');
+
+            Route::post('/users/{user}/promote', [AdminController::class, 'promote'])
+                ->name('users.promote');
+
+            Route::post('/users/{user}/demote', [AdminController::class, 'demote'])
+                ->name('users.demote');
         });
 });
