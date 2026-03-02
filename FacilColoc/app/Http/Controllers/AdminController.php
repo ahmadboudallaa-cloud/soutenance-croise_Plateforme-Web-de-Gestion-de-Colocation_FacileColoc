@@ -6,6 +6,9 @@ use App\Models\User;
 use App\Models\Colocation;
 use App\Models\Expense;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -39,6 +42,89 @@ class AdminController extends Controller
 
         $users = User::orderBy('created_at', 'desc')->get();
         return view('admin.users', compact('users'));
+    }
+
+    public function create()
+    {
+        $this->requireAdmin();
+
+        return view('admin.users-create');
+    }
+
+    public function store(Request $request)
+    {
+        $this->requireAdmin();
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'is_global_admin' => ['nullable', 'boolean'],
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'is_global_admin' => (bool) $request->is_global_admin,
+        ]);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Compte créé.');
+    }
+
+    public function edit(User $user)
+    {
+        $this->requireAdmin();
+
+        return view('admin.users-edit', compact('user'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $this->requireAdmin();
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'is_global_admin' => ['nullable', 'boolean'],
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'is_global_admin' => (bool) $request->is_global_admin,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Compte modifié.');
+    }
+
+    public function destroy(User $user)
+    {
+        $this->requireAdmin();
+
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
+        }
+
+        if ($user->is_global_admin) {
+            $adminsCount = User::where('is_global_admin', true)->count();
+            if ($adminsCount <= 1) {
+                return back()->with('error', 'Impossible de supprimer le dernier admin.');
+            }
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'Compte supprimé.');
     }
 
     public function ban(User $user)

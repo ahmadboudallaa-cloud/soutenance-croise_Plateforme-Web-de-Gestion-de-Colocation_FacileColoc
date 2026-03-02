@@ -12,9 +12,9 @@
         </div>
     @endif
 
-    <div class="row">
+    <div class="row g-3">
         <div class="col-md-4">
-            <div class="card text-center">
+            <div class="card text-center p-2">
                 <div class="card-body">
                     <h5>Utilisateurs</h5>
                     <h2>{{ $usersCount }}</h2>
@@ -23,7 +23,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card text-center">
+            <div class="card text-center p-2">
                 <div class="card-body">
                     <h5>Colocations</h5>
                     <h2>{{ $colocationsCount }}</h2>
@@ -32,7 +32,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card text-center">
+            <div class="card text-center p-2">
                 <div class="card-body">
                     <h5>Dépenses</h5>
                     <h2>{{ $expensesCount }}</h2>
@@ -43,7 +43,7 @@
 
     <div class="row mt-3">
         <div class="col-md-4">
-            <div class="card text-center border-danger">
+            <div class="card text-center border-danger p-2">
                 <div class="card-body">
                     <h5>Utilisateurs bannis</h5>
                     <h2>{{ $bannedCount }}</h2>

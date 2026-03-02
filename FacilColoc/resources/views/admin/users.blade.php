@@ -12,7 +12,20 @@
         </div>
     @endif
 
-    <table class="table mt-4">
+    @if (session('error'))
+        <div class="alert alert-danger mt-3">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <div class="my-3">
+        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+            Ajouter un compte
+        </a>
+    </div>
+
+    <div class="card p-3">
+    <table class="table mt-0">
         <thead>
             <tr>
                 <th>Nom</th>
@@ -48,7 +61,10 @@
 
                 <td>{{ $user->reputation ?? 0 }}</td>
 
-                <td>
+                <td class="d-flex gap-2">
+                    <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-outline-primary btn-sm">
+                        Modifier
+                    </a>
 
                     @if(!$user->isBanned())
 
@@ -72,6 +88,14 @@
 
                     @endif
 
+                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-outline-danger btn-sm">
+                            Supprimer
+                        </button>
+                    </form>
+
                 </td>
             </tr>
 
@@ -79,6 +103,7 @@
 
         </tbody>
     </table>
+    </div>
 
 </div>
 
