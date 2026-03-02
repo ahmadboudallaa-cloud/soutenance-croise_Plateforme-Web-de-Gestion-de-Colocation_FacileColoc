@@ -8,7 +8,7 @@
             <div class="card p-4">
                 <div class="mb-3">
                     <h2 class="mb-1">Créer un compte</h2>
-                    <div class="text-muted">Rejoins EasyColoc en quelques secondes</div>
+                    <div class="text-muted">Rejoins FacileColoc en quelques secondes</div>
                 </div>
 
                 <form method="POST" action="{{ route('register') }}">
