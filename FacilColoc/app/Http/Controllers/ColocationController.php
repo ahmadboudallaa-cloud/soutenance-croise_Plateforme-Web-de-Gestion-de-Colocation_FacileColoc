@@ -24,7 +24,6 @@ class ColocationController extends Controller
     {
         $colocations = Auth::user()
             ->colocations()
-            ->where('colocations.status', 'active')
             ->wherePivotNull('left_at')
             ->orderBy('colocations.created_at', 'desc')
             ->get();
@@ -102,7 +101,13 @@ class ColocationController extends Controller
 
     public function show(Colocation $colocation)
     {
-        if ($colocation->status !== 'active') {
+        $isOwner = $colocation->users()
+            ->where('users.id', Auth::id())
+            ->wherePivot('role', 'owner')
+            ->wherePivotNull('left_at')
+            ->exists();
+
+        if ($colocation->status !== 'active' && !$isOwner) {
             return redirect()->route('dashboard');
         }
 
@@ -124,13 +129,8 @@ class ColocationController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $isOwner = $colocation->users()
-            ->where('users.id', Auth::id())
-            ->wherePivot('role', 'owner')
-            ->wherePivotNull('left_at')
-            ->exists();
-
         $balances = $this->calculateBalances($members, $expenses, $payments);
+        $isInactive = $colocation->status === 'inactive';
 
         $debtors = collect($balances)->filter(fn ($b) => $b['balance'] < 0);
         $creditors = collect($balances)->filter(fn ($b) => $b['balance'] > 0);
@@ -170,7 +170,8 @@ class ColocationController extends Controller
             'settlements',
             'invitations',
             'isOwner',
-            'selectedMonth'
+            'selectedMonth',
+            'isInactive'
         ));
     }
 
@@ -178,7 +179,7 @@ class ColocationController extends Controller
     {
         $this->ensureOwner($colocation);
 
-        if ($colocation->status !== 'active') {
+        if ($colocation->status === 'cancelled') {
             return redirect()->route('dashboard')
                 ->with('error', 'Cette colocation est déjà annulée.');
         }
@@ -193,9 +194,24 @@ class ColocationController extends Controller
             $balance['user']->increment('reputation', $delta);
         }
 
-        $colocation->update(['status' => 'cancelled']);
+        $colocation->delete();
         return redirect()->route('dashboard')
-            ->with('success', 'Colocation annulée.');
+            ->with('success', 'Colocation supprimée.');
+    }
+
+    public function deactivate(Colocation $colocation)
+    {
+        $this->ensureOwner($colocation);
+
+        if ($colocation->status !== 'active') {
+            return redirect()->route('dashboard')
+                ->with('error', 'Cette colocation n’est pas active.');
+        }
+
+        $colocation->update(['status' => 'inactive']);
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Colocation désactivée.');
     }
 
     public function leave(Colocation $colocation)
