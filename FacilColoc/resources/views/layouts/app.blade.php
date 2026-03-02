@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>EasyColoc</title>
+    <title>FacileColoc</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -192,13 +192,13 @@
 
 <div class="mobile-bar">
     <button class="btn btn-outline-light btn-sm" onclick="toggleDrawer()">Menu</button>
-    <div class="brand">EasyColoc</div>
+    <div class="brand">FacileColoc</div>
     <div></div>
 </div>
 
 <div class="drawer" id="drawer" onclick="toggleDrawer()">
     <div class="drawer-panel" onclick="event.stopPropagation()">
-        <div class="brand mb-3">EasyColoc</div>
+        <div class="brand mb-3">FacileColoc</div>
         <div class="nav-label">Navigation</div>
         <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
         <a class="nav-link" href="{{ route('colocations.index') }}">Mes colocations</a>
@@ -227,7 +227,7 @@
 
 <div class="app-shell">
     <aside class="sidebar">
-        <div class="brand">EasyColoc</div>
+        <div class="brand">FacileColoc</div>
 
         <div class="nav-label">Navigation</div>
         <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
@@ -261,7 +261,7 @@
                     <span class="pill">Connecté : {{ auth()->user()->name }}</span>
                 @endauth
             </div>
-            <div class="text-muted">EasyColoc • Gestion de colocation</div>
+            <div class="text-muted">FacileColoc • Gestion de colocation</div>
         </div>
 
         @yield('content')
