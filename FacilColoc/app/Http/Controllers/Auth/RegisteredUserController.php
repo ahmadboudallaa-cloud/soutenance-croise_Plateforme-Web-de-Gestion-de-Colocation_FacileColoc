@@ -45,6 +45,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        if ($request->filled('invitation_token')) {
+            return redirect()->route('invitations.show', $request->invitation_token);
+        }
+
         return redirect(route('dashboard', absolute: false));
     }
 }

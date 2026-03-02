@@ -18,17 +18,60 @@
         </div>
         <a href="{{ route('dashboard') }}" class="btn btn-secondary">Retour</a>
     @else
-        <div class="d-flex gap-2">
-            <form method="POST" action="{{ route('invitations.accept', $invitation->token) }}">
-                @csrf
-                <button class="btn btn-success">Accepter</button>
-            </form>
+        @auth
+            <div class="d-flex gap-2">
+                <form method="POST" action="{{ route('invitations.accept', $invitation->token) }}">
+                    @csrf
+                    <button class="btn btn-success">Accepter</button>
+                </form>
 
-            <form method="POST" action="{{ route('invitations.decline', $invitation->token) }}">
-                @csrf
-                <button class="btn btn-outline-danger">Refuser</button>
-            </form>
-        </div>
+                <form method="POST" action="{{ route('invitations.decline', $invitation->token) }}">
+                    @csrf
+                    <button class="btn btn-outline-danger">Refuser</button>
+                </form>
+            </div>
+        @endauth
+
+        @guest
+            @if ($hasAccount)
+                <div class="alert alert-info">
+                    Un compte existe déjà pour {{ $invitation->email }}. Connectez-vous pour accepter l’invitation.
+                </div>
+                <a class="btn btn-primary" href="{{ route('login', ['email' => $invitation->email, 'invitation_token' => $invitation->token]) }}">
+                    Se connecter
+                </a>
+            @else
+                <div class="alert alert-info">
+                    Aucun compte n’existe pour {{ $invitation->email }}. Créez un compte pour accepter l’invitation.
+                </div>
+                <form method="POST" action="{{ route('register') }}" class="mt-3">
+                    @csrf
+                    <input type="hidden" name="invitation_token" value="{{ $invitation->token }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nom</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ $invitation->email }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirmer le mot de passe</label>
+                        <input type="password" name="password_confirmation" class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-success">Créer le compte</button>
+                </form>
+            @endif
+        @endguest
     @endif
 
 </div>

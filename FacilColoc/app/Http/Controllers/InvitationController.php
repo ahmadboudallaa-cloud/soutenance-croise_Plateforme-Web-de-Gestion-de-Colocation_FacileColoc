@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvitationMail;
 
 class InvitationController extends Controller
 {
@@ -54,8 +56,15 @@ class InvitationController extends Controller
 
         $link = route('invitations.show', $invitation->token);
 
+        try {
+            Mail::to($email)->send(new InvitationMail($invitation));
+            $message = 'Invitation créée et envoyée par email.';
+        } catch (\Throwable $e) {
+            $message = 'Invitation créée, mais l’envoi email a échoué.';
+        }
+
         return back()
-            ->with('success', 'Invitation créée.')
+            ->with('success', $message)
             ->with('invite_link', $link);
     }
 
@@ -63,7 +72,9 @@ class InvitationController extends Controller
     {
         $invitation = Invitation::where('token', $token)->firstOrFail();
 
-        return view('invitations.show', compact('invitation'));
+        $hasAccount = User::whereRaw('LOWER(email) = ?', [strtolower($invitation->email)])->exists();
+
+        return view('invitations.show', compact('invitation', 'hasAccount'));
     }
 
     public function accept(string $token)
@@ -166,5 +177,18 @@ class InvitationController extends Controller
         if (!$isOwner) {
             abort(403);
         }
+    }
+
+    public function destroy(Colocation $colocation, Invitation $invitation)
+    {
+        $this->authorizeOwner($colocation);
+
+        if ($invitation->colocation_id !== $colocation->id) {
+            abort(404);
+        }
+
+        $invitation->delete();
+
+        return back()->with('success', 'Invitation supprimée.');
     }
 }
