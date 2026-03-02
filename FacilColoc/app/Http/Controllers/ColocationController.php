@@ -3,43 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Colocation;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ColocationController extends Controller
 {
-
-    /*
-    |--------------------------------------------------------------------------
-    | INDEX
-    |--------------------------------------------------------------------------
-    */
-
     public function index()
     {
-        $colocations = Auth::user()->colocations;
+        $colocations = Auth::user()
+            ->colocations()
+            ->where('colocations.status', 'active')
+            ->wherePivotNull('left_at')
+            ->orderBy('colocations.created_at', 'desc')
+            ->get();
+
         return view('colocations.index', compact('colocations'));
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE
-    |--------------------------------------------------------------------------
-    */
 
     public function create()
     {
         return view('colocations.create');
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | STORE (création)
-    |--------------------------------------------------------------------------
-    */
 
     public function store(Request $request)
     {
@@ -48,15 +32,20 @@ class ColocationController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        // 🚫 Une seule colocation active
-        $hasActive = Auth::user()
-            ->colocations()
-            ->where('status', 'active')
-            ->exists();
-
-        if ($hasActive) {
-            return redirect()->route('dashboard')
-                ->with('error', 'Vous avez déjà une colocation active.');
+        if (
+            Auth::user()
+                ->colocations()
+                ->where('colocations.status', 'active')
+                ->wherePivotNull('left_at')
+                ->exists()
+        ) {
+            return redirect()
+                ->route('colocations.create')
+                ->withInput()
+                ->with(
+                    'error',
+                    'Déjà une colocation active. Annulez ou quittez votre colocation avant d’en créer une nouvelle.'
+                );
         }
 
         $colocation = Colocation::create([
@@ -65,7 +54,6 @@ class ColocationController extends Controller
             'status' => 'active',
         ]);
 
-        // 👑 Attacher owner
         $colocation->users()->attach(Auth::id(), [
             'role' => 'owner',
             'left_at' => null,
@@ -74,241 +62,230 @@ class ColocationController extends Controller
         return redirect()->route('colocations.show', $colocation);
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | SHOW
-    |--------------------------------------------------------------------------
-    */
-
     public function show(Colocation $colocation)
     {
         if ($colocation->status !== 'active') {
-            return redirect()->route('dashboard')
-                ->with('error', 'Colocation annulée.');
-        }
-
-        $balances = $this->calculateBalances($colocation);
-
-        return view('colocations.show', compact('colocation', 'balances'));
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | EDIT
-    |--------------------------------------------------------------------------
-    */
-
-    public function edit(Colocation $colocation)
-    {
-        return view('colocations.edit', compact('colocation'));
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE
-    |--------------------------------------------------------------------------
-    */
-
-    public function update(Request $request, Colocation $colocation)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        $colocation->update($request->only(['name', 'description']));
-
-        return redirect()->route('colocations.show', $colocation);
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | DESTROY (suppression)
-    |--------------------------------------------------------------------------
-    */
-
-    public function destroy(Colocation $colocation)
-    {
-        $colocation->delete();
-        return redirect()->route('dashboard');
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | JOIN via token
-    |--------------------------------------------------------------------------
-    */
-
-    public function join($token)
-    {
-        $colocation = Colocation::where('invitation_token', $token)->firstOrFail();
-
-        // 🚫 Une seule colocation active
-        $hasActive = Auth::user()
-            ->colocations()
-            ->where('status', 'active')
-            ->exists();
-
-        if ($hasActive) {
-            return redirect()->route('dashboard')
-                ->with('error', 'Vous avez déjà une colocation active.');
-        }
-
-        $colocation->users()->attach(Auth::id(), [
-            'role' => 'member',
-            'left_at' => null,
-        ]);
-
-        return redirect()->route('colocations.show', $colocation);
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | LEAVE (Member quitte)
-    |--------------------------------------------------------------------------
-    */
-
-    public function leave(Colocation $colocation)
-    {
-        $user = Auth::user();
-
-        $membership = $colocation->users()
-            ->where('user_id', $user->id)
-            ->first();
-
-        if (!$membership) {
             return redirect()->route('dashboard');
         }
 
-        if ($membership->pivot->role === 'owner') {
-            return redirect()->back()
-                ->with('error', 'Le propriétaire ne peut pas quitter.');
+        $members = $colocation->users()->whereNull('left_at')->get();
+        $selectedMonth = request()->query('month');
+        $expensesQuery = $colocation->expenses()->with('payer');
+        if ($selectedMonth) {
+            $expensesQuery->whereYear('expense_date', substr($selectedMonth, 0, 4))
+                ->whereMonth('expense_date', substr($selectedMonth, 5, 2));
         }
 
-        $balance = $this->calculateUserBalance($colocation, $user);
+        $expenses = $expensesQuery->orderBy('expense_date', 'desc')->get();
+        $payments = $colocation->payments()
+            ->with(['payer', 'receiver'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $invitations = $colocation->invitations()
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        if ($balance < 0) {
-            $user->decrement('reputation');
-        } else {
-            $user->increment('reputation');
-        }
+        $isOwner = $colocation->users()
+            ->where('users.id', Auth::id())
+            ->wherePivot('role', 'owner')
+            ->wherePivotNull('left_at')
+            ->exists();
 
-        $colocation->users()->updateExistingPivot($user->id, [
-            'left_at' => now()
-        ]);
+        $balances = $this->calculateBalances($members, $expenses, $payments);
 
-        return redirect()->route('dashboard');
-    }
+        $debtors = collect($balances)->filter(fn ($b) => $b['balance'] < 0);
+        $creditors = collect($balances)->filter(fn ($b) => $b['balance'] > 0);
 
+        $settlements = [];
 
-    /*
-    |--------------------------------------------------------------------------
-    | CANCEL (Owner annule)
-    |--------------------------------------------------------------------------
-    */
+        foreach ($debtors as $debtor) {
+            $debt = abs($debtor['balance']);
 
-    public function cancel(Colocation $colocation)
-    {
-        $user = Auth::user();
+            foreach ($creditors as &$creditor) {
+                if ($debt <= 0) {
+                    break;
+                }
+                if ($creditor['balance'] <= 0) {
+                    continue;
+                }
 
-        $membership = $colocation->users()
-            ->where('user_id', $user->id)
-            ->first();
+                $amount = min($debt, $creditor['balance']);
 
-        if (!$membership || $membership->pivot->role !== 'owner') {
-            abort(403);
-        }
+                $settlements[] = [
+                    'from' => $debtor['user'],
+                    'to' => $creditor['user'],
+                    'amount' => $amount,
+                ];
 
-        $colocation->update([
-            'status' => 'cancelled'
-        ]);
-
-        foreach ($colocation->users as $member) {
-
-            $balance = $this->calculateUserBalance($colocation, $member);
-
-            if ($balance < 0) {
-                $member->decrement('reputation');
-            } else {
-                $member->increment('reputation');
+                $creditor['balance'] -= $amount;
+                $debt -= $amount;
             }
         }
 
-        return redirect()->route('dashboard');
+        return view('colocations.show', compact(
+            'colocation',
+            'members',
+            'expenses',
+            'payments',
+            'balances',
+            'settlements',
+            'invitations',
+            'isOwner',
+            'selectedMonth'
+        ));
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | CALCUL BALANCES
-    |--------------------------------------------------------------------------
-    */
-
-    private function calculateBalances(Colocation $colocation)
+    public function cancel(Colocation $colocation)
     {
-        $balances = [];
+        $isOwner = $colocation->users()
+            ->where('users.id', Auth::id())
+            ->wherePivot('role', 'owner')
+            ->wherePivotNull('left_at')
+            ->exists();
 
-        $members = $colocation->users()
-            ->whereNull('left_at')
-            ->get();
-
-        $expenses = $colocation->expenses;
-
-        $total = $expenses->sum('amount');
-        $count = $members->count();
-
-        if ($count === 0) {
-            return [];
+        if (!$isOwner) {
+            abort(403);
         }
 
-        $share = $total / $count;
+        if ($colocation->status !== 'active') {
+            return redirect()->route('dashboard')
+                ->with('error', 'Cette colocation est déjà annulée.');
+        }
+
+        $members = $colocation->users()->whereNull('left_at')->get();
+        $expenses = $colocation->expenses()->with('payer')->get();
+        $payments = $colocation->payments()->get();
+        $balances = $this->calculateBalances($members, $expenses, $payments);
+
+        foreach ($balances as $balance) {
+            $delta = $balance['balance'] < 0 ? -1 : 1;
+            $balance['user']->increment('reputation', $delta);
+        }
+
+        $colocation->update(['status' => 'cancelled']);
+        return redirect()->route('dashboard')
+            ->with('success', 'Colocation annulée.');
+    }
+
+    public function leave(Colocation $colocation)
+    {
+        $membership = $colocation->users()
+            ->where('users.id', Auth::id())
+            ->wherePivotNull('left_at')
+            ->first();
+
+        if (!$membership) {
+            abort(403);
+        }
+
+        $role = $membership->pivot->role ?? 'member';
+        if ($role === 'owner') {
+            return redirect()->route('colocations.show', $colocation)
+                ->with('error', 'Le propriétaire ne peut pas quitter la colocation.');
+        }
+
+        $members = $colocation->users()->whereNull('left_at')->get();
+        $expenses = $colocation->expenses()->with('payer')->get();
+        $payments = $colocation->payments()->get();
+        $balances = $this->calculateBalances($members, $expenses, $payments);
+
+        $currentBalance = $balances[Auth::id()]['balance'] ?? 0;
+        $delta = $currentBalance < 0 ? -1 : 1;
+        Auth::user()->increment('reputation', $delta);
+
+        $colocation->users()->updateExistingPivot(Auth::id(), [
+            'left_at' => now(),
+        ]);
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Vous avez quitté la colocation.');
+    }
+
+    public function removeMember(Colocation $colocation, \App\Models\User $user)
+    {
+        $isOwner = $colocation->users()
+            ->where('users.id', Auth::id())
+            ->wherePivot('role', 'owner')
+            ->wherePivotNull('left_at')
+            ->exists();
+
+        if (!$isOwner) {
+            abort(403);
+        }
+
+        $member = $colocation->users()
+            ->where('users.id', $user->id)
+            ->wherePivotNull('left_at')
+            ->first();
+
+        if (!$member) {
+            return redirect()->route('colocations.show', $colocation)
+                ->with('error', 'Membre introuvable.');
+        }
+
+        if (($member->pivot->role ?? 'member') === 'owner') {
+            return redirect()->route('colocations.show', $colocation)
+                ->with('error', 'Impossible de retirer le propriétaire.');
+        }
+
+        $members = $colocation->users()->whereNull('left_at')->get();
+        $expenses = $colocation->expenses()->with('payer')->get();
+        $payments = $colocation->payments()->get();
+        $balances = $this->calculateBalances($members, $expenses, $payments);
+
+        $memberBalance = $balances[$user->id]['balance'] ?? 0;
+        $delta = $memberBalance < 0 ? -1 : 1;
+        $user->increment('reputation', $delta);
+
+        if ($memberBalance < 0) {
+            $ownerId = Auth::id();
+            $colocation->payments()->create([
+                'payer_id' => $ownerId,
+                'receiver_id' => $user->id,
+                'amount' => abs($memberBalance),
+            ]);
+        }
+
+        $colocation->users()->updateExistingPivot($user->id, [
+            'left_at' => now(),
+        ]);
+
+        return redirect()->route('colocations.show', $colocation)
+            ->with('success', 'Membre retiré.');
+    }
+
+    private function calculateBalances($members, $expenses, $payments): array
+    {
+        $totalExpenses = $expenses->sum('amount');
+        $memberCount = $members->count();
+        $share = $memberCount > 0 ? $totalExpenses / $memberCount : 0;
+
+        $balances = [];
 
         foreach ($members as $member) {
-
-            $paid = $expenses
+            $paidExpenses = $expenses
                 ->where('paid_by', $member->id)
                 ->sum('amount');
 
+            $received = $payments
+                ->where('receiver_id', $member->id)
+                ->sum('amount');
+
+            $sent = $payments
+                ->where('payer_id', $member->id)
+                ->sum('amount');
+
+            $paid = $paidExpenses + $received - $sent;
+
             $balances[$member->id] = [
                 'user' => $member,
-                'balance' => $paid - $share
+                'paid' => $paid,
+                'share' => $share,
+                'balance' => $paid - $share,
             ];
         }
 
         return $balances;
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CALCUL BALANCE INDIVIDUELLE
-    |--------------------------------------------------------------------------
-    */
-
-    private function calculateUserBalance(Colocation $colocation, User $user)
-    {
-        $total = $colocation->expenses->sum('amount');
-
-        $membersCount = $colocation->users()
-            ->whereNull('left_at')
-            ->count();
-
-        if ($membersCount === 0) {
-            return 0;
-        }
-
-        $share = $total / $membersCount;
-
-        $paid = $colocation->expenses()
-            ->where('paid_by', $user->id)
-            ->sum('amount');
-
-        return $paid - $share;
     }
 }
