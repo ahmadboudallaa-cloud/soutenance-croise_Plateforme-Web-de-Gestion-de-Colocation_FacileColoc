@@ -122,6 +122,16 @@ class AdminController extends Controller
             }
         }
 
+        $hasPayments = \App\Models\Payment::where('payer_id', $user->id)
+            ->orWhere('receiver_id', $user->id)
+            ->exists();
+
+        $hasExpenses = \App\Models\Expense::where('paid_by', $user->id)->exists();
+
+        if ($hasPayments || $hasExpenses) {
+            return back()->with('error', 'Impossible de supprimer ce compte : il possède des dépenses ou des paiements.');
+        }
+
         $user->delete();
 
         return back()->with('success', 'Compte supprimé.');
@@ -147,5 +157,32 @@ class AdminController extends Controller
         ]);
 
         return back()->with('success', 'Utilisateur débanni');
+    }
+
+    public function promote(User $user)
+    {
+        $this->requireAdmin();
+
+        $user->update(['is_global_admin' => true]);
+
+        return back()->with('success', 'Rôle admin attribué.');
+    }
+
+    public function demote(User $user)
+    {
+        $this->requireAdmin();
+
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Vous ne pouvez pas vous retirer votre propre rôle admin.');
+        }
+
+        $adminsCount = User::where('is_global_admin', true)->count();
+        if ($adminsCount <= 1) {
+            return back()->with('error', 'Impossible de retirer le rôle du dernier admin.');
+        }
+
+        $user->update(['is_global_admin' => false]);
+
+        return back()->with('success', 'Rôle admin retiré.');
     }
 }
