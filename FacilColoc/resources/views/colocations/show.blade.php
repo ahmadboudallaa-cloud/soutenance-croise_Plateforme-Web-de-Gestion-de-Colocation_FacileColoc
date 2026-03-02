@@ -9,7 +9,13 @@
             <h2 class="mb-1">{{ $colocation->name }}</h2>
             <div class="text-muted small">
                 Statut :
-                <span class="badge bg-success">Active</span>
+                @if($colocation->status === 'active')
+                    <span class="badge bg-success">Active</span>
+                @elseif($colocation->status === 'inactive')
+                    <span class="badge bg-secondary">Inactive</span>
+                @else
+                    <span class="badge bg-danger">Annulée</span>
+                @endif
             </div>
         </div>
         @if ($isOwner)
@@ -39,21 +45,38 @@
                class="btn btn-outline-primary">
                 Modifier la colocation
             </a>
+            @if (!$isInactive)
+                <form method="POST" action="{{ route('colocations.deactivate', $colocation->id) }}">
+                    @csrf
+                    @method('PATCH')
+                    <button class="btn btn-outline-secondary">
+                        Désactiver la colocation
+                    </button>
+                </form>
+            @endif
             <form method="POST" action="{{ route('colocations.cancel', $colocation->id) }}">
                 @csrf
                 @method('PATCH')
                 <button class="btn btn-outline-danger">
-                    Annuler la colocation
+                    Supprimer la colocation
                 </button>
             </form>
         </div>
     @else
-        <form method="POST" action="{{ route('colocations.leave', $colocation->id) }}" class="mb-3">
-            @csrf
-            <button class="btn btn-outline-secondary">
-                Quitter la colocation
-            </button>
-        </form>
+        @if (!$isInactive)
+            <form method="POST" action="{{ route('colocations.leave', $colocation->id) }}" class="mb-3">
+                @csrf
+                <button class="btn btn-outline-secondary">
+                    Quitter la colocation
+                </button>
+            </form>
+        @endif
+    @endif
+
+    @if ($isInactive)
+        <div class="alert alert-info">
+            Colocation inactive : consultation de l’historique uniquement. L’owner peut supprimer la colocation.
+        </div>
     @endif
 
     <h4>Membres</h4>
@@ -69,7 +92,7 @@
                     @endif
                     <span class="text-muted ms-2">Réputation : {{ $member->reputation ?? 0 }}</span>
                 </div>
-                @if ($isOwner && ($member->pivot->role ?? 'member') !== 'owner')
+                @if ($isOwner && !$isInactive && ($member->pivot->role ?? 'member') !== 'owner')
                     <div class="d-flex gap-2">
                         <form method="POST" action="{{ route('colocations.members.transfer', [$colocation->id, $member->id]) }}">
                             @csrf
@@ -87,20 +110,8 @@
 
     <hr>
 
-    @if ($isOwner)
+    @if ($isOwner && !$isInactive)
         <h4>Invitations</h4>
-
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
 
         <form method="POST" action="{{ route('colocations.invite', $colocation->id) }}" class="mb-3">
             @csrf
@@ -164,10 +175,14 @@
     </form>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ route('expenses.create',$colocation->id) }}"
-           class="btn btn-primary">
-            Ajouter dépense
-        </a>
+        @if (!$isInactive)
+            <a href="{{ route('expenses.create',$colocation->id) }}"
+               class="btn btn-primary">
+                Ajouter dépense
+            </a>
+        @else
+            <span class="text-muted">Lecture seule</span>
+        @endif
         <span class="text-muted">
             Total : {{ number_format($expenses->sum('amount'), 2) }} €
         </span>
@@ -190,17 +205,21 @@
                 <td>{{ $expense->expense_date }}</td>
                 <td>{{ $expense->payer->name ?? '-' }}</td>
                 <td class="text-end">
-                    <a href="{{ route('expenses.edit', [$colocation->id, $expense->id]) }}"
-                       class="btn btn-sm btn-outline-primary">
-                        Modifier
-                    </a>
-                    <form method="POST" action="{{ route('expenses.destroy', [$colocation->id, $expense->id]) }}" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-sm btn-outline-danger">
-                            Supprimer
-                        </button>
-                    </form>
+                    @if(!$isInactive)
+                        <a href="{{ route('expenses.edit', [$colocation->id, $expense->id]) }}"
+                           class="btn btn-sm btn-outline-primary">
+                            Modifier
+                        </a>
+                        <form method="POST" action="{{ route('expenses.destroy', [$colocation->id, $expense->id]) }}" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-outline-danger">
+                                Supprimer
+                            </button>
+                        </form>
+                    @else
+                        <span class="text-muted">—</span>
+                    @endif
                 </td>
             </tr>
         @endforeach
@@ -211,42 +230,34 @@
 
     <h4>Qui doit à qui</h4>
 
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+    @if ($isInactive)
+        <div class="alert alert-light">Colocation inactive : paiements désactivés.</div>
+    @else
+        @forelse($settlements as $s)
+            <div class="alert alert-warning d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ $s['from']->name }}</strong>
+                    doit payer
+                    <strong>{{ $s['to']->name }}</strong>
+                    :
+                    {{ number_format($s['amount'],2) }} €
+                </div>
 
-    @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    @forelse($settlements as $s)
-        <div class="alert alert-warning d-flex justify-content-between align-items-center">
-            <div>
-                <strong>{{ $s['from']->name }}</strong>
-                doit payer
-                <strong>{{ $s['to']->name }}</strong>
-                :
-                {{ number_format($s['amount'],2) }} €
+                <form method="POST" action="{{ route('payments.store') }}" onsubmit="this.querySelector('button').disabled = true;">
+                    @csrf
+                    <input type="hidden" name="colocation_id" value="{{ $colocation->id }}">
+                    <input type="hidden" name="payer_id" value="{{ $s['from']->id }}">
+                    <input type="hidden" name="receiver_id" value="{{ $s['to']->id }}">
+                    <input type="hidden" name="amount" value="{{ $s['amount'] }}">
+                    <button class="btn btn-success btn-sm">Marquer payé</button>
+                </form>
             </div>
-
-            <form method="POST" action="{{ route('payments.store') }}" onsubmit="this.querySelector('button').disabled = true;">
-                @csrf
-                <input type="hidden" name="colocation_id" value="{{ $colocation->id }}">
-                <input type="hidden" name="payer_id" value="{{ $s['from']->id }}">
-                <input type="hidden" name="receiver_id" value="{{ $s['to']->id }}">
-                <input type="hidden" name="amount" value="{{ $s['amount'] }}">
-                <button class="btn btn-success btn-sm">Marquer payé</button>
-            </form>
-        </div>
-    @empty
-        <div class="alert alert-success">
-            Tout est équilibré
-        </div>
-    @endforelse
+        @empty
+            <div class="alert alert-success">
+                Tout est équilibré
+            </div>
+        @endforelse
+    @endif
 
     <hr>
 
