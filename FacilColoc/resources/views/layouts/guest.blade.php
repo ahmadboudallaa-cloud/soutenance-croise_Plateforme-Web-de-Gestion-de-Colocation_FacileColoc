@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>EasyColoc</title>
+    <title>FacileColoc</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -64,7 +64,7 @@
 <body>
 
 <div class="container py-5">
-    <div class="text-center mb-4 brand">EasyColoc</div>
+    <div class="text-center mb-4 brand">FacileColoc</div>
     @yield('content')
 </div>
 
