@@ -8,7 +8,7 @@
             <div class="card p-4">
                 <div class="mb-3">
                     <h2 class="mb-1">Connexion</h2>
-                    <div class="text-muted">Accède à ton espace EasyColoc</div>
+                    <div class="text-muted">Accède à ton espace FacileColoc</div>
                 </div>
 
                 <form method="POST" action="{{ route('login') }}">
