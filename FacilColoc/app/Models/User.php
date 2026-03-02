@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'is_global_admin',
         'banned_at',
+        'reputation',
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'is_global_admin' => 'boolean',
         'banned_at' => 'datetime',
+        'reputation' => 'integer',
     ];
 
      public function isBanned(): bool
