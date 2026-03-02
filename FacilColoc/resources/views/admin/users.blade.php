@@ -66,6 +66,22 @@
                         Modifier
                     </a>
 
+                    @if(!$user->is_global_admin)
+                        <form method="POST" action="{{ route('admin.users.promote', $user) }}">
+                            @csrf
+                            <button class="btn btn-outline-success btn-sm">
+                                Donner admin
+                            </button>
+                        </form>
+                    @else
+                        <form method="POST" action="{{ route('admin.users.demote', $user) }}">
+                            @csrf
+                            <button class="btn btn-outline-warning btn-sm">
+                                Retirer admin
+                            </button>
+                        </form>
+                    @endif
+
                     @if(!$user->isBanned())
 
                         <form method="POST"
