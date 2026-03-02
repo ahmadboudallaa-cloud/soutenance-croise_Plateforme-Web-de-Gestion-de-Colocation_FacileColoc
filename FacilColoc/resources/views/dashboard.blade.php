@@ -30,7 +30,13 @@
                     <div class="card p-3 h-100">
                         <div class="d-flex align-items-center justify-content-between">
                             <strong>{{ $colocation->name }}</strong>
-                            <span class="badge bg-success">Active</span>
+                            @if($colocation->status === 'active')
+                                <span class="badge bg-success">Active</span>
+                            @elseif($colocation->status === 'inactive')
+                                <span class="badge bg-secondary">Inactive</span>
+                            @else
+                                <span class="badge bg-danger">Annulée</span>
+                            @endif
                         </div>
                         <div class="text-muted small mt-2">
                             Accéder à la colocation
