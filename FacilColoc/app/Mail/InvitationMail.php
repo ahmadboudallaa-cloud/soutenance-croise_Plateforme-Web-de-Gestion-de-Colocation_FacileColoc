@@ -20,7 +20,7 @@ class InvitationMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Invitation EasyColoc')
+        return $this->subject('Invitation FacileColoc')
             ->view('emails.invitation');
     }
 }
