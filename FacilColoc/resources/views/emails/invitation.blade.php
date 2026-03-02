@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Invitation EasyColoc</title>
+    <title>Invitation FacileColoc</title>
 </head>
 <body>
     <p>Bonjour,</p>
@@ -19,6 +19,6 @@
 
     <p>Si vous n’êtes pas concerné, ignorez cet email.</p>
 
-    <p>— EasyColoc</p>
+    <p>— FacileColoc</p>
 </body>
 </html>
