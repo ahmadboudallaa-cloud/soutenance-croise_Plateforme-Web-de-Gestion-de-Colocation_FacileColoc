@@ -1,59 +1,144 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# EasyColoc
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+EasyColoc est une application web de gestion de colocation qui permet de suivre les dépenses communes et de répartir automatiquement les dettes entre membres.  
+Objectif : éviter les calculs manuels et donner une vue claire de **« qui doit quoi à qui »**.
 
-## About Laravel
+## Fonctionnalités
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Utilisateurs
+- Inscription / Connexion / Profil
+- Premier utilisateur inscrit promu **Admin global** automatiquement
+- Blocage des utilisateurs bannis (déconnexion automatique + refus d’accès)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Colocations
+- Création d’une colocation (owner automatique)
+- Invitation par email/token
+- Une seule colocation active par utilisateur
+- Départ d’un membre (`left_at`)
+- Retrait d’un membre par l’owner
+- Transfert du rôle **Owner**
+- Annulation de colocation (`status = cancelled`)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Dépenses
+- Ajout, modification, suppression
+- Montant, date, payeur, catégorie
+- Filtre par mois sur la vue colocation
 
-## Learning Laravel
+### Soldes & Dettes
+- Calcul automatique des soldes individuels
+- Vue simplifiée « qui doit à qui »
+- Paiements simples via **“Marquer payé”**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Réputation
+- Départ / annulation avec dette : **-1**
+- Départ / annulation sans dette : **+1**
+- Si un owner retire un membre avec dette : dette imputée à l’owner
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Administration globale
+- Stats globales (colocations, utilisateurs, dépenses, bannis)
+- CRUD utilisateurs
+- Bannir / débannir
 
-## Laravel Sponsors
+## Stack technique
+- **Laravel (MVC monolithique)**
+- **MySQL / PostgreSQL** via migrations
+- **Eloquent** (`hasMany`, `belongsToMany`)
+- **Authentification** : Laravel Breeze
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Installation
 
-### Premium Partners
+1. **Cloner le projet**
+```bash
+git clone <repo>
+cd FacilColoc
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+2. **Installer les dépendances**
+```bash
+composer install
+npm install
+```
 
-## Contributing
+3. **Configurer l’environnement**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. **Configurer la base**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=FacilColoc
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Code of Conduct
+5. **Migrer**
+```bash
+php artisan migrate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+6. **Lancer**
+```bash
+php artisan serve
+npm run dev
+```
 
-## Security Vulnerabilities
+## Configuration Email (Invitations)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Gmail SMTP (réel)
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=ton_email@gmail.com
+MAIL_PASSWORD="APP_PASSWORD"
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="ton_email@gmail.com"
+MAIL_FROM_NAME="FacileColoc"
+```
 
-## License
+> Utilise un **App Password Gmail** (pas le mot de passe normal).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Mailpit (local)
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="no-reply@easycoloc.test"
+MAIL_FROM_NAME="FacileColoc"
+```
+
+Puis :
+```bash
+php artisan config:clear
+```
+
+## Rôles
+- **Member** : membre d’une colocation
+- **Owner** : créateur de la colocation, peut inviter/retirer/transférer le rôle
+- **Admin global** : stats globales, modération utilisateurs
+
+## Routes principales
+
+### Utilisateur
+- `/dashboard` : mes colocations
+- `/colocations/{id}` : détails colocation
+- `/profile` : profil
+
+### Admin
+- `/admin/dashboard`
+- `/admin/users`
+
+## Notes
+- Le bouton **“Marquer payé”** est disponible pour tous les membres.
+- Les dettes sont recalculées automatiquement après paiement.
+
+---
+
+Si tu veux ajouter Stripe, notifications temps réel, calendrier ou export, ces fonctionnalités sont prévues comme bonus.
