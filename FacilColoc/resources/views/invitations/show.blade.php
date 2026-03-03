@@ -1,79 +1,81 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
 @section('content')
 
-<div class="container py-4">
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-semibold">Invitation</h1>
+        <p class="text-sm text-muted mt-1">Rejoindre une colocation en toute simplicité.</p>
+    </div>
 
-    <h2>Invitation</h2>
-
-    <div class="mb-3">
-        <div><strong>Colocation :</strong> {{ $invitation->colocation->name }}</div>
-        <div><strong>Invité :</strong> {{ $invitation->email }}</div>
-        <div><strong>Statut :</strong> {{ $invitation->status }}</div>
+    <div class="rounded-2xl border border-line bg-surface p-4 text-sm">
+        <div><span class="text-muted">Colocation :</span> <strong>{{ $invitation->colocation->name }}</strong></div>
+        <div><span class="text-muted">Invité :</span> <strong>{{ $invitation->email }}</strong></div>
+        <div><span class="text-muted">Statut :</span> <strong>{{ $invitation->status }}</strong></div>
     </div>
 
     @if ($invitation->status !== 'pending')
-        <div class="alert alert-info">
+        <div class="rounded-xl border border-line bg-white px-4 py-3 text-muted">
             Cette invitation n’est plus active.
         </div>
-        <a href="{{ route('dashboard') }}" class="btn btn-secondary">Retour</a>
+        <a href="{{ route('login') }}" class="inline-block px-4 py-2 rounded-xl border border-line hover:bg-surface">Retour</a>
     @else
         @auth
-            <div class="d-flex gap-2">
+            <div class="flex gap-3">
                 <form method="POST" action="{{ route('invitations.accept', $invitation->token) }}">
                     @csrf
-                    <button class="btn btn-success">Accepter</button>
+                    <button class="px-4 py-2 rounded-xl bg-primary text-white shadow-soft hover:bg-primary/90 transition">Accepter</button>
                 </form>
 
                 <form method="POST" action="{{ route('invitations.decline', $invitation->token) }}">
                     @csrf
-                    <button class="btn btn-outline-danger">Refuser</button>
+                    <button class="px-4 py-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50">Refuser</button>
                 </form>
             </div>
         @endauth
 
         @guest
             @if ($hasAccount)
-                <div class="alert alert-info">
+                <div class="rounded-xl border border-line bg-white px-4 py-3 text-muted">
                     Un compte existe déjà pour {{ $invitation->email }}. Connectez-vous pour accepter l’invitation.
                 </div>
-                <a class="btn btn-primary" href="{{ route('login', ['email' => $invitation->email, 'invitation_token' => $invitation->token]) }}">
+                <a class="inline-block mt-3 px-4 py-2 rounded-xl bg-primary text-white shadow-soft hover:bg-primary/90 transition"
+                   href="{{ route('login', ['email' => $invitation->email, 'invitation_token' => $invitation->token]) }}">
                     Se connecter
                 </a>
             @else
-                <div class="alert alert-info">
+                <div class="rounded-xl border border-line bg-white px-4 py-3 text-muted">
                     Aucun compte n’existe pour {{ $invitation->email }}. Créez un compte pour accepter l’invitation.
                 </div>
-                <form method="POST" action="{{ route('register') }}" class="mt-3">
+                <form method="POST" action="{{ route('register') }}" class="space-y-4 mt-4">
                     @csrf
                     <input type="hidden" name="invitation_token" value="{{ $invitation->token }}">
 
-                    <div class="mb-3">
-                        <label class="form-label">Nom</label>
-                        <input type="text" name="name" class="form-control" required>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Nom</label>
+                        <input type="text" name="name" class="w-full px-3 py-2 rounded-xl border border-line bg-white" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" value="{{ $invitation->email }}" required>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Email</label>
+                        <input type="email" name="email" class="w-full px-3 py-2 rounded-xl border border-line bg-white" value="{{ $invitation->email }}" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" class="form-control" required>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Mot de passe</label>
+                        <input type="password" name="password" class="w-full px-3 py-2 rounded-xl border border-line bg-white" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Confirmer le mot de passe</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Confirmer le mot de passe</label>
+                        <input type="password" name="password_confirmation" class="w-full px-3 py-2 rounded-xl border border-line bg-white" required>
                     </div>
 
-                    <button class="btn btn-success">Créer le compte</button>
+                    <button class="px-4 py-2 rounded-xl bg-primary text-white shadow-soft hover:bg-primary/90 transition">Créer le compte</button>
                 </form>
             @endif
         @endguest
     @endif
-
 </div>
 
 @endsection
