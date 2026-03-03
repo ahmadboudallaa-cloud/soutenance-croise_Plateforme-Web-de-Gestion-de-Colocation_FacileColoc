@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -23,7 +23,7 @@ class Colocation extends Model
 {
    return $this->belongsToMany(User::class)
     ->withPivot(['role','left_at'])
-    ->withTimestamps();   // ⚠️ ICI
+    ->withTimestamps();   // âš ï¸ ICI
 }
     public function expenses()
 {
@@ -45,3 +45,4 @@ public function invitations()
     return $this->hasMany(Invitation::class);
 }
 }
+

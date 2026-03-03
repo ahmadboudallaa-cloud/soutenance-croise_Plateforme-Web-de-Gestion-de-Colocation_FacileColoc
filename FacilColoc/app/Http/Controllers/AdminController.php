@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
@@ -70,7 +70,7 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'Compte créé.');
+            ->with('success', 'Compte crÃ©Ã©.');
     }
 
     public function edit(User $user)
@@ -104,7 +104,7 @@ class AdminController extends Controller
         $user->update($data);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'Compte modifié.');
+            ->with('success', 'Compte modifiÃ©.');
     }
 
     public function destroy(User $user)
@@ -129,12 +129,12 @@ class AdminController extends Controller
         $hasExpenses = \App\Models\Expense::where('paid_by', $user->id)->exists();
 
         if ($hasPayments || $hasExpenses) {
-            return back()->with('error', 'Impossible de supprimer ce compte : il possède des dépenses ou des paiements.');
+            return back()->with('error', 'Impossible de supprimer ce compte : il possÃ¨de des dÃ©penses ou des paiements.');
         }
 
         $user->delete();
 
-        return back()->with('success', 'Compte supprimé.');
+        return back()->with('success', 'Compte supprimÃ©.');
     }
 
     public function ban(User $user)
@@ -156,7 +156,7 @@ class AdminController extends Controller
             'banned_at' => null
         ]);
 
-        return back()->with('success', 'Utilisateur débanni');
+        return back()->with('success', 'Utilisateur dÃ©banni');
     }
 
     public function promote(User $user)
@@ -165,7 +165,7 @@ class AdminController extends Controller
 
         $user->update(['is_global_admin' => true]);
 
-        return back()->with('success', 'Rôle admin attribué.');
+        return back()->with('success', 'RÃ´le admin attribuÃ©.');
     }
 
     public function demote(User $user)
@@ -173,16 +173,17 @@ class AdminController extends Controller
         $this->requireAdmin();
 
         if ($user->id === Auth::id()) {
-            return back()->with('error', 'Vous ne pouvez pas vous retirer votre propre rôle admin.');
+            return back()->with('error', 'Vous ne pouvez pas vous retirer votre propre rÃ´le admin.');
         }
 
         $adminsCount = User::where('is_global_admin', true)->count();
         if ($adminsCount <= 1) {
-            return back()->with('error', 'Impossible de retirer le rôle du dernier admin.');
+            return back()->with('error', 'Impossible de retirer le rÃ´le du dernier admin.');
         }
 
         $user->update(['is_global_admin' => false]);
 
-        return back()->with('success', 'Rôle admin retiré.');
+        return back()->with('success', 'RÃ´le admin retirÃ©.');
     }
 }
+

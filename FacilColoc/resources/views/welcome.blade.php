@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -160,7 +160,7 @@
 <footer class="border-t border-line">
     <div class="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="font-display text-lg">FacileColoc</div>
-        <div class="text-sm text-white">� 2026 FacileColoc. Tous droits reserves.</div>
+        <div class="text-sm text-white">© 2026 FacileColoc. Tous droits reserves.</div>
         <div class="flex gap-4 text-sm text-white">
             <a href="#" class="hover:text-ink">Mentions</a>
             <a href="#" class="hover:text-ink">Confidentialite</a>
@@ -171,3 +171,4 @@
 
 </body>
 </html>
+

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 
@@ -6,7 +6,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h2 class="text-2xl font-semibold">Utilisateurs</h2>
-            <p class="text-sm text-white">Gérez les comptes et les rôles.</p>
+            <p class="text-sm text-white">GÃ©rez les comptes et les rÃ´les.</p>
         </div>
         <a href="{{ route('admin.users.create') }}" class="px-4 py-2 rounded-xl bg-primary text-white shadow-soft hover:shadow-lg transition hover:bg-primary/90 transition">
             + Ajouter un compte
@@ -34,7 +34,7 @@
                         <th class="py-3 px-4 text-left">Email</th>
                         <th class="py-3 px-4 text-left">Admin</th>
                         <th class="py-3 px-4 text-left">Statut</th>
-                        <th class="py-3 px-4 text-left">Réputation</th>
+                        <th class="py-3 px-4 text-left">RÃ©putation</th>
                         <th class="py-3 px-4 text-right">Actions</th>
                     </tr>
                 </thead>
@@ -82,7 +82,7 @@
                                     @else
                                         <form method="POST" action="{{ route('admin.users.unban',$user) }}">
                                             @csrf
-                                            <button class="px-2 py-1 rounded-lg border border-line hover:bg-primary">Débannir</button>
+                                            <button class="px-2 py-1 rounded-lg border border-line hover:bg-primary">DÃ©bannir</button>
                                         </form>
                                     @endif
 
@@ -102,3 +102,4 @@
 </div>
 
 @endsection
+

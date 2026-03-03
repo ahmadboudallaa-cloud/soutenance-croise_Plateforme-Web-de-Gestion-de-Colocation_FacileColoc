@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Middleware;
 
@@ -14,9 +14,10 @@ class EnsureNotBanned
             auth()->logout();
 
             return redirect('/')
-                ->with('error', 'Votre compte a été désactivé.');
+                ->with('error', 'Votre compte a Ã©tÃ© dÃ©sactivÃ©.');
         }
 
         return $next($request);
     }
 }
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Auth;
 
@@ -9,9 +9,7 @@ use Illuminate\View\View;
 
 class EmailVerificationPromptController extends Controller
 {
-    /**
-     * Display the email verification prompt.
-     */
+    
     public function __invoke(Request $request): RedirectResponse|View
     {
         return $request->user()->hasVerifiedEmail()
@@ -19,3 +17,4 @@ class EmailVerificationPromptController extends Controller
                     : view('auth.verify-email');
     }
 }
+

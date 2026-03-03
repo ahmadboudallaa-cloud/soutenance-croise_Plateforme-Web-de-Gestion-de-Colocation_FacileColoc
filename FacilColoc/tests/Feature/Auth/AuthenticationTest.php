@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\User;
 
@@ -39,3 +39,4 @@ test('users can logout', function () {
     $this->assertGuest();
     $response->assertRedirect('/');
 });
+

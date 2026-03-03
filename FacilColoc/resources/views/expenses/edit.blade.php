@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 
@@ -18,7 +18,7 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Montant (�)</label>
+                <label class="block text-sm font-medium mb-1">Montant (€)</label>
                 <input type="number" step="0.01" name="amount" class="w-full px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500"
                        value="{{ old('amount', $expense->amount) }}" required>
             </div>
@@ -53,3 +53,4 @@
 </div>
 
 @endsection
+

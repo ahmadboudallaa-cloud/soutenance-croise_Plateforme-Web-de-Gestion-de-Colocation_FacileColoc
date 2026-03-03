@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
@@ -28,11 +28,7 @@ class ExpenseController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE
-    |--------------------------------------------------------------------------
-    */
+    
     public function create(Colocation $colocation)
     {
         $this->ensureMember($colocation);
@@ -44,11 +40,7 @@ class ExpenseController extends Controller
         return view('expenses.create', compact('colocation', 'members'));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | STORE
-    |--------------------------------------------------------------------------
-    */
+    
     public function store(Request $request, Colocation $colocation)
     {
         $this->ensureMember($colocation);
@@ -70,14 +62,10 @@ class ExpenseController extends Controller
 
         return redirect()
             ->route('colocations.show', $colocation->id)
-            ->with('success', 'Dépense ajoutée.');
+            ->with('success', 'DÃ©pense ajoutÃ©e.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | EDIT
-    |--------------------------------------------------------------------------
-    */
+    
     public function edit(Colocation $colocation, Expense $expense)
     {
         $this->ensureMember($colocation);
@@ -90,11 +78,7 @@ class ExpenseController extends Controller
         return view('expenses.edit', compact('colocation', 'expense', 'members'));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE
-    |--------------------------------------------------------------------------
-    */
+    
     public function update(Request $request, Colocation $colocation, Expense $expense)
     {
         $this->ensureMember($colocation);
@@ -116,14 +100,10 @@ class ExpenseController extends Controller
 
         return redirect()
             ->route('colocations.show', $colocation->id)
-            ->with('success', 'Dépense modifiée.');
+            ->with('success', 'DÃ©pense modifiÃ©e.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | DESTROY
-    |--------------------------------------------------------------------------
-    */
+    
     public function destroy(Colocation $colocation, Expense $expense)
     {
         $this->ensureMember($colocation);
@@ -133,6 +113,7 @@ class ExpenseController extends Controller
 
         return redirect()
             ->route('colocations.show', $colocation->id)
-            ->with('success', 'Dépense supprimée.');
+            ->with('success', 'DÃ©pense supprimÃ©e.');
     }
 }
+

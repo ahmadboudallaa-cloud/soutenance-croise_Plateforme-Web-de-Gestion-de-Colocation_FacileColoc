@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
@@ -50,12 +50,12 @@ class PaymentController extends Controller
         ]);
 
         if ($request->payer_id == $request->receiver_id) {
-            return back()->with('error', 'Le payeur et le bénéficiaire doivent être différents.');
+            return back()->with('error', 'Le payeur et le bÃ©nÃ©ficiaire doivent Ãªtre diffÃ©rents.');
         }
 
         $colocation = Colocation::findOrFail($request->colocation_id);
         if ($colocation->status !== 'active') {
-            return back()->with('error', 'La colocation est annulée.');
+            return back()->with('error', 'La colocation est annulÃ©e.');
         }
 
         $isMember = $colocation->users()
@@ -78,7 +78,7 @@ class PaymentController extends Controller
             ->exists();
 
         if (!$payerIsMember || !$receiverIsMember) {
-            return back()->with('error', 'Le payeur et le bénéficiaire doivent être membres actifs de la colocation.');
+            return back()->with('error', 'Le payeur et le bÃ©nÃ©ficiaire doivent Ãªtre membres actifs de la colocation.');
         }
 
         $members = $colocation->users()->whereNull('left_at')->get();
@@ -98,7 +98,7 @@ class PaymentController extends Controller
         }
 
         if ($amount > $maxPayable + 0.01) {
-            return back()->with('error', 'Le montant dépasse la dette actuelle.');
+            return back()->with('error', 'Le montant dÃ©passe la dette actuelle.');
         }
 
         $duplicate = Payment::where('colocation_id', $request->colocation_id)
@@ -109,7 +109,7 @@ class PaymentController extends Controller
             ->exists();
 
         if ($duplicate) {
-            return back()->with('error', 'Paiement déjà enregistré.');
+            return back()->with('error', 'Paiement dÃ©jÃ  enregistrÃ©.');
         }
 
         Payment::create([
@@ -121,6 +121,7 @@ class PaymentController extends Controller
 
         return redirect()
             ->route('colocations.show', $request->colocation_id)
-            ->with('success', 'Paiement enregistré.');
+            ->with('success', 'Paiement enregistrÃ©.');
     }
 }
+

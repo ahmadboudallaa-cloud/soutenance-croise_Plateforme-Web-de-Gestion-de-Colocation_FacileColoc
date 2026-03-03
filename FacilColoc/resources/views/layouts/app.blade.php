@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -41,7 +41,7 @@
         <nav class="space-y-2 text-sm">
             <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">Dashboard</a>
             <a href="{{ route('colocations.index') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">Mes colocations</a>
-            <a href="{{ route('colocations.create') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">Créer une colocation</a>
+            <a href="{{ route('colocations.create') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">CrÃ©er une colocation</a>
             <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">Mon profil</a>
             @auth
             @if(auth()->user()->isGlobalAdmin())
@@ -54,7 +54,7 @@
         @auth
         <form method="POST" action="{{ route('logout') }}" class="mt-auto pt-6">
             @csrf
-            <button class="w-full px-3 py-2 rounded-xl border border-white/30 text-white hover:bg-white/10">Se déconnecter</button>
+            <button class="w-full px-3 py-2 rounded-xl border border-white/30 text-white hover:bg-white/10">Se dÃ©connecter</button>
         </form>
         @endauth
     </aside>
@@ -68,7 +68,7 @@
         <div id="mobileMenu" class="hidden lg:hidden bg-primary border-b border-line px-4 py-3 space-y-2 text-sm">
             <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">Dashboard</a>
             <a href="{{ route('colocations.index') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">Mes colocations</a>
-            <a href="{{ route('colocations.create') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">Créer une colocation</a>
+            <a href="{{ route('colocations.create') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">CrÃ©er une colocation</a>
             <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-xl hover:bg-white/10">Mon profil</a>
             @auth
             @if(auth()->user()->isGlobalAdmin())
@@ -80,7 +80,7 @@
             @auth
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button class="w-full px-3 py-2 rounded-xl border border-white/30 text-white hover:bg-white/10">Se déconnecter</button>
+                <button class="w-full px-3 py-2 rounded-xl border border-white/30 text-white hover:bg-white/10">Se dÃ©connecter</button>
             </form>
             @endauth
         </div>
@@ -89,7 +89,7 @@
             <div class="bg-primary border border-line rounded-2xl px-4 py-3 shadow-soft hover:shadow-lg transition flex items-center justify-between">
                 <div class="text-sm text-white">Gestion de colocation</div>
                 @auth
-                    <div class="text-sm font-medium">Connecté : {{ auth()->user()->name }}</div>
+                    <div class="text-sm font-medium">ConnectÃ© : {{ auth()->user()->name }}</div>
                 @endauth
             </div>
         </header>
@@ -102,3 +102,4 @@
 
 </body>
 </html>
+

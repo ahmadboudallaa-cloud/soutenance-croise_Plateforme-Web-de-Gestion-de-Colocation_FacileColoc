@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -33,3 +33,4 @@ class Invitation extends Model
         return $this->belongsTo(User::class, 'invited_by');
     }
 }
+

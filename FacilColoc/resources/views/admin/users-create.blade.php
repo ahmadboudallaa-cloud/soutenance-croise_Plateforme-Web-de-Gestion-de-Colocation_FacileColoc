@@ -1,10 +1,10 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 
 <div class="max-w-3xl mx-auto">
     <div class="bg-primary text-white border border-line rounded-2xl p-6 shadow-soft hover:shadow-lg transition">
-        <h2 class="text-2xl font-semibold mb-2">Créer un compte</h2>
+        <h2 class="text-2xl font-semibold mb-2">CrÃ©er un compte</h2>
         <p class="text-sm text-white mb-6">Ajoutez un nouvel utilisateur.</p>
 
         @if ($errors->any())
@@ -46,7 +46,7 @@
             </label>
 
             <div class="flex gap-2">
-                <button class="px-4 py-2 rounded-xl bg-white text-black font-bold border border-line">Créer</button>
+                <button class="px-4 py-2 rounded-xl bg-white text-black font-bold border border-line">CrÃ©er</button>
                 <a href="{{ route('admin.users.index') }}" class="px-4 py-2 rounded-xl border border-white/30 text-white">Retour</a>
             </div>
         </form>
@@ -54,4 +54,5 @@
 </div>
 
 @endsection
+
 

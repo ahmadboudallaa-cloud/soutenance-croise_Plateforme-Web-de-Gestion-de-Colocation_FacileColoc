@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,7 @@
 <body>
     <p>Bonjour,</p>
 
-    <p>Vous avez été invité à rejoindre la colocation <strong>{{ $invitation->colocation->name }}</strong>.</p>
+    <p>Vous avez Ã©tÃ© invitÃ© Ã  rejoindre la colocation <strong>{{ $invitation->colocation->name }}</strong>.</p>
 
     <p>Cliquez sur ce lien pour accepter ou refuser :</p>
 
@@ -17,8 +17,9 @@
         </a>
     </p>
 
-    <p>Si vous n’êtes pas concerné, ignorez cet email.</p>
+    <p>Si vous nâ€™Ãªtes pas concernÃ©, ignorez cet email.</p>
 
-    <p>— FacileColoc</p>
+    <p>â€” FacileColoc</p>
 </body>
 </html>
+

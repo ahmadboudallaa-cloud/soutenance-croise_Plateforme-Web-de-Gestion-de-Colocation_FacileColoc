@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Mail;
 
@@ -24,3 +24,4 @@ class InvitationMail extends Mailable
             ->view('emails.invitation');
     }
 }
+

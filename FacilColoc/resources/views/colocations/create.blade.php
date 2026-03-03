@@ -1,11 +1,11 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 
 <div class="max-w-3xl mx-auto">
     <div class="bg-primary text-white border border-line rounded-2xl p-6 shadow-none hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] transition">
-        <h2 class="text-2xl font-semibold mb-2">Créer une colocation</h2>
-        <p class="text-sm text-white mb-6">Donnez un nom et une description à votre colocation.</p>
+        <h2 class="text-2xl font-semibold mb-2">CrÃ©er une colocation</h2>
+        <p class="text-sm text-white mb-6">Donnez un nom et une description Ã  votre colocation.</p>
 
         @if (session('error'))
             <div class="mb-4 rounded-xl border border-red-200 bg-white px-4 py-3 text-red-600">
@@ -39,7 +39,7 @@
 
             <div class="flex gap-2">
                 <button class="px-4 py-2 rounded-xl bg-white text-black font-bold border border-line">
-                    Créer
+                    CrÃ©er
                 </button>
                 <a href="{{ route('colocations.index') }}" class="px-4 py-2 rounded-xl border border-white/30 text-white">
                     Annuler
@@ -50,4 +50,5 @@
 </div>
 
 @endsection
+
 

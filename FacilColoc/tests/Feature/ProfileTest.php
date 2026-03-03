@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\User;
 
@@ -83,3 +83,4 @@ test('correct password must be provided to delete account', function () {
 
     $this->assertNotNull($user->fresh());
 });
+

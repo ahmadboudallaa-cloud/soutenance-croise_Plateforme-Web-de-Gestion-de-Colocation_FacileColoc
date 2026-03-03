@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+﻿@extends('layouts.guest')
 
 @section('content')
 
@@ -87,3 +87,4 @@
 </div>
 
 @endsection
+

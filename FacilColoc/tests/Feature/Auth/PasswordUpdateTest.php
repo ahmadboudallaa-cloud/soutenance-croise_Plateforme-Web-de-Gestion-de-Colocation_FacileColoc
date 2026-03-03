@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -38,3 +38,4 @@ test('correct password must be provided to update password', function () {
         ->assertSessionHasErrorsIn('updatePassword', 'current_password')
         ->assertRedirect('/profile');
 });
+

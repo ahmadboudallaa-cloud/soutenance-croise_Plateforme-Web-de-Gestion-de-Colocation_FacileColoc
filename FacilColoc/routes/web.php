@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ColocationController;
@@ -26,11 +26,7 @@ require __DIR__.'/auth.php';
 
 Route::middleware(['auth', 'not_banned'])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | DASHBOARD
-    |--------------------------------------------------------------------------
-    */
+    
     Route::get('/dashboard', function () {
 
         $colocations = auth()->user()
@@ -43,11 +39,7 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
 
     })->name('dashboard');
 
-    /*
-    |--------------------------------------------------------------------------
-    | COLOCATIONS
-    |--------------------------------------------------------------------------
-    */
+    
     Route::resource('colocations', ColocationController::class);
 
     Route::patch(
@@ -121,21 +113,13 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
         [ExpenseController::class, 'destroy']
     )->name('expenses.destroy');
 
-    /*
-    |--------------------------------------------------------------------------
-    | PAYMENTS
-    |--------------------------------------------------------------------------
-    */
+    
     Route::post(
         '/payments',
         [PaymentController::class, 'store']
     )->name('payments.store');
 
-    /*
-    |--------------------------------------------------------------------------
-    | PROFILE
-    |--------------------------------------------------------------------------
-    */
+    
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])
@@ -143,11 +127,7 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 
-    /*
-    |--------------------------------------------------------------------------
-    | ADMIN DASHBOARD
-    |--------------------------------------------------------------------------
-    */
+    
 
     Route::prefix('admin')
         ->name('admin.')
@@ -187,3 +167,4 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
                 ->name('users.demote');
         });
 });
+
