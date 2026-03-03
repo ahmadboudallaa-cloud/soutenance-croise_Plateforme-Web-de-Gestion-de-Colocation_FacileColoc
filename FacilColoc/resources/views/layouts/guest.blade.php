@@ -4,68 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>FacileColoc</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Syne:wght@500;600;700&display=swap"
-          rel="stylesheet">
-
-    <style>
-        :root {
-            --bg: #f5f7fb;
-            --panel: #ffffff;
-            --card: #ffffff;
-            --border: #e5e9f2;
-            --text: #0f172a;
-            --muted: #5b6472;
-            --accent: #1dd675;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Manrope", "system-ui", "sans-serif"],
+                        display: ["Syne", "system-ui", "sans-serif"],
+                    },
+                    colors: {
+                        ink: "#0F172A",
+                        muted: "#5B6472",
+                        primary: "#2F6BFF",
+                        surface: "#F7F8FB",
+                        line: "#E6E8F0",
+                    },
+                    boxShadow: {
+                        soft: "0 10px 30px rgba(15, 23, 42, 0.08)",
+                    }
+                }
+            }
         }
-
-        body {
-            margin: 0;
-            font-family: "Manrope", system-ui, -apple-system, sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(1200px 600px at 15% -20%, #dfe7f3 0%, transparent 60%),
-                radial-gradient(800px 500px at 85% -10%, #e8f3e8 0%, transparent 55%),
-                var(--bg);
-            min-height: 100vh;
-        }
-
-        .brand {
-            font-family: "Syne", sans-serif;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            font-size: 1.6rem;
-            color: var(--text);
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            color: var(--text);
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            border: none;
-            color: #0f172a;
-            font-weight: 700;
-        }
-
-        .btn-accent:hover {
-            background: #17c26b;
-            color: #0f172a;
-        }
-    </style>
+    </script>
 </head>
+<body class="bg-surface text-ink font-sans">
 
-<body>
+<div class="min-h-screen flex flex-col">
+    <header class="py-6">
+        <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary font-bold flex items-center justify-center">FC</div>
+                <div class="font-display text-lg">FacileColoc</div>
+            </a>
+            <div class="text-sm text-muted">Gestion moderne de colocation</div>
+        </div>
+    </header>
 
-<div class="container py-5">
-    <div class="text-center mb-4 brand">FacileColoc</div>
-    @yield('content')
+    <main class="flex-1 flex items-center justify-center px-6 pb-10">
+        <div class="w-full max-w-2xl">
+            <div class="bg-white border border-line rounded-2xl p-6 shadow-soft">
+                @yield('content')
+            </div>
+        </div>
+    </main>
 </div>
 
 </body>
