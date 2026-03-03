@@ -5,7 +5,7 @@
 <div class="space-y-6">
     <div>
         <h1 class="text-2xl font-semibold">Connexion</h1>
-        <p class="text-sm text-white mt-1">AccÃ¨de Ã  ton espace FacileColoc.</p>
+        <p class="text-sm text-white mt-1">Accéde à ton espace FacileColoc.</p>
     </div>
 
     <form method="POST" action="{{ route('login') }}" class="space-y-4">
@@ -40,7 +40,7 @@
                 Se souvenir de moi
             </label>
             @if (Route::has('password.request'))
-                <a class="text-white hover:underline" href="{{ route('password.request') }}">Mot de passe oubliÃ© ?</a>
+                <a class="text-white hover:underline" href="{{ route('password.request') }}">Mot de passe oublié ?</a>
             @endif
         </div>
 
@@ -50,12 +50,13 @@
 
         <div class="text-center text-sm">
             <a href="{{ route('register', ['invitation_token' => request('invitation_token'), 'email' => request('email')]) }}" class="text-white hover:underline">
-                CrÃ©er un compte
+                Créer un compte
             </a>
         </div>
     </form>
 </div>
 
 @endsection
+
 
 
