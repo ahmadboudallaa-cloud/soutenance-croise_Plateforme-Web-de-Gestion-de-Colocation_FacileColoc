@@ -2,56 +2,59 @@
 
 @section('content')
 
-<div class="container">
+<div class="max-w-3xl mx-auto">
+    <div class="bg-primary text-white border border-line rounded-2xl p-6 shadow-soft hover:shadow-lg transition">
+        <h2 class="text-2xl font-semibold mb-2">Modifier un compte</h2>
+        <p class="text-sm text-white mb-6">Mettez a jour les informations utilisateur.</p>
 
-    <h2>Modifier un compte</h2>
+        @if ($errors->any())
+            <div class="mb-4 rounded-xl border border-red-200 bg-white px-4 py-3 text-red-600">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+        <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-4">
+            @csrf
+            @method('PATCH')
 
-    <form method="POST" action="{{ route('admin.users.update', $user) }}">
-        @csrf
-        @method('PATCH')
+            <div>
+                <label class="block text-sm font-medium mb-1">Nom</label>
+                <input type="text" name="name" class="w-full px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500"
+                       value="{{ old('name', $user->name) }}" required>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Nom</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
-        </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" name="email" class="w-full px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500"
+                       value="{{ old('email', $user->email) }}" required>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
-        </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Nouveau mot de passe (optionnel)</label>
+                <input type="password" name="password" class="w-full px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500">
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Nouveau mot de passe (optionnel)</label>
-            <input type="password" name="password" class="form-control">
-        </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Confirmer le mot de passe</label>
+                <input type="password" name="password_confirmation" class="w-full px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500">
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Confirmer le mot de passe</label>
-            <input type="password" name="password_confirmation" class="form-control">
-        </div>
-
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="is_global_admin" value="1" id="is_global_admin"
-                   @checked(old('is_global_admin', $user->is_global_admin))>
-            <label class="form-check-label" for="is_global_admin">
+            <label class="inline-flex items-center gap-2 text-sm">
+                <input type="checkbox" id="is_global_admin" name="is_global_admin" value="1" class="rounded border-line"
+                       @checked(old('is_global_admin', $user->is_global_admin))>
                 Admin global
             </label>
-        </div>
 
-        <button class="btn btn-primary">Enregistrer</button>
-        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Retour</a>
-    </form>
-
+            <div class="flex gap-2">
+                <button class="px-4 py-2 rounded-xl bg-white text-black font-bold border border-line">Enregistrer</button>
+                <a href="{{ route('admin.users.index') }}" class="px-4 py-2 rounded-xl border border-white/30 text-white">Retour</a>
+            </div>
+        </form>
+    </div>
 </div>
 
 @endsection
