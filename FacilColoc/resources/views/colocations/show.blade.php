@@ -15,7 +15,7 @@
                 @elseif($colocation->status === 'inactive')
                     <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-black">Inactive</span>
                 @else
-                    <span class="text-xs px-2 py-1 rounded-full bg-red-50 text-white">AnnulÃ©e</span>
+                    <span class="text-xs px-2 py-1 rounded-full bg-red-50 text-white">Annulée</span>
                 @endif
             </div>
         </div>
@@ -52,7 +52,7 @@
 
     @if ($isInactive)
         <div class="rounded-xl border border-line bg-primary px-4 py-3 text-white">
-            Colocation inactive : consultation de lâ€™historique uniquement.
+            Colocation inactive : consultation de l€™historique uniquement.
         </div>
     @endif
 
@@ -67,7 +67,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <div class="font-medium">{{ $member->name }}</div>
-                            <div class="text-xs text-white">RÃ©putation : {{ $member->reputation ?? 0 }}</div>
+                            <div class="text-xs text-white">Réputation : {{ $member->reputation ?? 0 }}</div>
                         </div>
                         <div class="text-xs">
                             @if(($member->pivot->role ?? 'member') === 'owner')
@@ -81,7 +81,7 @@
                         <div class="flex gap-2 text-xs">
                             <form method="POST" action="{{ route('colocations.members.transfer', [$colocation->id, $member->id]) }}">
                                 @csrf
-                                <button class="px-2 py-1 rounded-lg border border-line hover:bg-primary">TransfÃ©rer owner</button>
+                                <button class="px-2 py-1 rounded-lg border border-line hover:bg-primary">Transférer owner</button>
                             </form>
                             <form method="POST" action="{{ route('colocations.members.remove', [$colocation->id, $member->id]) }}">
                                 @csrf
@@ -103,13 +103,13 @@
                         <input type="email" name="email" placeholder="Email du membre"
                                class="flex-1 min-w-[240px] px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500" required>
                         <button class="px-4 py-2 rounded-xl bg-primary text-white shadow-none hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] transition hover:bg-primary/90 transition">
-                            Envoyer lâ€™invitation
+                            Envoyer l€™invitation
                         </button>
                     </form>
 
                     @if (session('invite_link'))
                         <div class="text-sm text-white mb-3">
-                            Lien dâ€™invitation : <span class="font-medium text-ink">{{ session('invite_link') }}</span>
+                            Lien d€™invitation : <span class="font-medium text-ink">{{ session('invite_link') }}</span>
                         </div>
                     @endif
 
@@ -139,17 +139,17 @@
             @endif
             <div class="bg-primary border border-line rounded-2xl p-5 shadow-none hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] transition">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold">DÃ©penses</h3>
-                    <div class="text-sm text-white">Total : {{ number_format($expenses->sum('amount'), 2) }} â‚¬</div>
+                    <h3 class="font-semibold">Dépenses</h3>
+                    <div class="text-sm text-white">Total : {{ number_format($expenses->sum('amount'), 2) }} ‚¬</div>
                 </div>
 
                 <form method="GET" action="{{ route('colocations.show', $colocation->id) }}" class="flex flex-wrap gap-2 mb-4">
                     <input type="month" name="month" class="px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500" value="{{ $selectedMonth }}">
                     <button class="px-3 py-2 rounded-xl border border-line hover:bg-primary">Filtrer</button>
-                    <a href="{{ route('colocations.show', $colocation->id) }}" class="px-3 py-2 rounded-xl border border-line hover:bg-primary">RÃ©initialiser</a>
+                    <a href="{{ route('colocations.show', $colocation->id) }}" class="px-3 py-2 rounded-xl border border-line hover:bg-primary">Réinitialiser</a>
                     @if(!$isInactive)
                         <a href="{{ route('expenses.create',$colocation->id) }}" class="ml-auto px-3 py-2 rounded-xl bg-primary text-white shadow-none hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] transition hover:bg-primary/90 transition">
-                            Ajouter une dÃ©pense
+                            Ajouter une dépense
                         </a>
                     @endif
                 </form>
@@ -161,7 +161,7 @@
                                 <th class="py-2 text-left">Titre</th>
                                 <th class="py-2 text-left">Montant</th>
                                 <th class="py-2 text-left">Date</th>
-                                <th class="py-2 text-left">PayÃ© par</th>
+                                <th class="py-2 text-left">Payé par</th>
                                 <th class="py-2 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -169,7 +169,7 @@
                             @foreach($expenses as $expense)
                                 <tr>
                                     <td class="py-3">{{ $expense->title }}</td>
-                                    <td class="py-3">{{ number_format($expense->amount,2) }} â‚¬</td>
+                                    <td class="py-3">{{ number_format($expense->amount,2) }} ‚¬</td>
                                     <td class="py-3">{{ $expense->expense_date }}</td>
                                     <td class="py-3">{{ $expense->payer->name ?? '-' }}</td>
                                     <td class="py-3 text-right">
@@ -181,7 +181,7 @@
                                                 <button class="px-2 py-1 rounded-lg border border-red-200 text-white hover:bg-red-50">Supprimer</button>
                                             </form>
                                         @else
-                                            <span class="text-white">â€”</span>
+                                            <span class="text-white">€”</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -192,15 +192,15 @@
             </div>
 
             <div class="bg-primary border border-line rounded-2xl p-5 shadow-none hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] transition">
-                <h3 class="font-semibold mb-3">Qui doit Ã  qui</h3>
+                <h3 class="font-semibold mb-3">Qui doit à qui</h3>
                 @if ($isInactive)
-                    <div class="text-white">Colocation inactive : paiements dÃ©sactivÃ©s.</div>
+                    <div class="text-white">Colocation inactive : paiements désactivés.</div>
                 @else
                     @forelse($settlements as $s)
                         <div class="flex items-center justify-between border border-line rounded-xl px-4 py-3 mb-2">
                             <div class="text-sm">
                                 <strong>{{ $s['from']->name }}</strong> doit payer <strong>{{ $s['to']->name }}</strong>
-                                â€” {{ number_format($s['amount'],2) }} â‚¬
+                                €” {{ number_format($s['amount'],2) }} ‚¬
                             </div>
                             <form method="POST" action="{{ route('payments.store') }}" onsubmit="this.querySelector('button').disabled = true;">
                                 @csrf
@@ -208,11 +208,11 @@
                                 <input type="hidden" name="payer_id" value="{{ $s['from']->id }}">
                                 <input type="hidden" name="receiver_id" value="{{ $s['to']->id }}">
                                 <input type="hidden" name="amount" value="{{ $s['amount'] }}">
-                                <button class="px-3 py-2 rounded-xl bg-secondary text-white hover:bg-secondary/90">Marquer payÃ©</button>
+                                <button class="px-3 py-2 rounded-xl bg-secondary text-white hover:bg-secondary/90">Marquer payé</button>
                             </form>
                         </div>
                     @empty
-                        <div class="text-white">Tout est Ã©quilibrÃ©.</div>
+                        <div class="text-white">Tout est équilibré.</div>
                     @endforelse
                 @endif
             </div>
@@ -221,5 +221,6 @@
 </div>
 
 @endsection
+
 
 
