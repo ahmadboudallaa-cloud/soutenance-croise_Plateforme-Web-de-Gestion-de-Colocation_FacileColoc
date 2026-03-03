@@ -5,7 +5,7 @@
 <div class="max-w-5xl mx-auto space-y-6">
     <div>
         <h2 class="text-2xl font-semibold">Mon profil</h2>
-        <p class="text-sm text-white">GÃ©rez vos informations et votre sÃ©curitÃ©.</p>
+        <p class="text-sm text-white">Gérez vos informations et votre sécurité.</p>
     </div>
 
     <div class="grid lg:grid-cols-2 gap-6">
@@ -15,7 +15,7 @@
 
             @if (session('status') === 'profile-updated')
                 <div class="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-                    Profil mis Ã  jour.
+                    Profil mis à jour.
                 </div>
             @endif
 
@@ -49,11 +49,11 @@
 
         <div class="bg-primary border border-line rounded-2xl p-6 shadow-soft hover:shadow-lg transition">
             <h3 class="font-semibold mb-2">Mot de passe</h3>
-            <p class="text-sm text-white mb-4">Mettez Ã  jour votre mot de passe.</p>
+            <p class="text-sm text-white mb-4">Mettez à jour votre mot de passe.</p>
 
             @if (session('status') === 'password-updated')
                 <div class="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-                    Mot de passe mis Ã  jour.
+                    Mot de passe mis à jour.
                 </div>
             @endif
 
@@ -88,7 +88,7 @@
                 </div>
 
                 <button class="px-4 py-2 rounded-xl bg-primary text-white shadow-soft hover:shadow-lg transition hover:bg-primary/90 transition">
-                    Mettre Ã  jour
+                    Mettre à jour
                 </button>
             </form>
         </div>
@@ -96,7 +96,7 @@
 
     <div class="bg-primary border border-red-200 rounded-2xl p-6 shadow-soft hover:shadow-lg transition">
         <h3 class="font-semibold text-white mb-2">Supprimer le compte</h3>
-        <p class="text-sm text-white mb-4">Cette action est irrÃ©versible.</p>
+        <p class="text-sm text-white mb-4">Cette action est irréversible.</p>
 
         @php($delErrors = $errors->getBag('userDeletion'))
 
@@ -120,5 +120,6 @@
 </div>
 
 @endsection
+
 
 
