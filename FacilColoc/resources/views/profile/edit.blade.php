@@ -2,109 +2,118 @@
 
 @section('content')
 
-<div class="container">
-    <div class="row g-3">
-        <div class="col-lg-6">
-            <div class="card p-4">
-                <h3 class="mb-1">Informations du profil</h3>
-                <div class="text-muted mb-3">Modifiez votre nom et votre email.</div>
+<div class="max-w-5xl mx-auto space-y-6">
+    <div>
+        <h2 class="text-2xl font-semibold">Mon profil</h2>
+        <p class="text-sm text-muted">Gérez vos informations et votre sécurité.</p>
+    </div>
 
-                @if (session('status') === 'profile-updated')
-                    <div class="alert alert-success">Profil mis à jour.</div>
+    <div class="grid lg:grid-cols-2 gap-6">
+        <div class="bg-white border border-line rounded-2xl p-6 shadow-soft">
+            <h3 class="font-semibold mb-2">Informations du profil</h3>
+            <p class="text-sm text-muted mb-4">Modifiez votre nom et votre email.</p>
+
+            @if (session('status') === 'profile-updated')
+                <div class="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
+                    Profil mis à jour.
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('profile.update') }}" class="space-y-4">
+                @csrf
+                @method('PATCH')
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nom</label>
+                    <input type="text" name="name" class="w-full px-3 py-2 rounded-xl border border-line bg-white" value="{{ old('name', $user->name) }}" required>
+                    @error('name')
+                        <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" name="email" class="w-full px-3 py-2 rounded-xl border border-line bg-white" value="{{ old('email', $user->email) }}" required>
+                    @error('email')
+                        <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <button class="px-4 py-2 rounded-xl bg-primary text-white shadow-soft hover:bg-primary/90 transition">
+                    Enregistrer
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-white border border-line rounded-2xl p-6 shadow-soft">
+            <h3 class="font-semibold mb-2">Mot de passe</h3>
+            <p class="text-sm text-muted mb-4">Mettez à jour votre mot de passe.</p>
+
+            @if (session('status') === 'password-updated')
+                <div class="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
+                    Mot de passe mis à jour.
+                </div>
+            @endif
+
+            @php($pwErrors = $errors->getBag('updatePassword'))
+
+            <form method="POST" action="{{ route('password.update') }}" class="space-y-4">
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Mot de passe actuel</label>
+                    <input type="password" name="current_password" class="w-full px-3 py-2 rounded-xl border border-line bg-white" required>
+                    @if ($pwErrors->has('current_password'))
+                        <div class="text-red-600 text-sm mt-1">{{ $pwErrors->first('current_password') }}</div>
+                    @endif
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nouveau mot de passe</label>
+                    <input type="password" name="password" class="w-full px-3 py-2 rounded-xl border border-line bg-white" required>
+                    @if ($pwErrors->has('password'))
+                        <div class="text-red-600 text-sm mt-1">{{ $pwErrors->first('password') }}</div>
+                    @endif
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Confirmer le mot de passe</label>
+                    <input type="password" name="password_confirmation" class="w-full px-3 py-2 rounded-xl border border-line bg-white" required>
+                    @if ($pwErrors->has('password_confirmation'))
+                        <div class="text-red-600 text-sm mt-1">{{ $pwErrors->first('password_confirmation') }}</div>
+                    @endif
+                </div>
+
+                <button class="px-4 py-2 rounded-xl bg-primary text-white shadow-soft hover:bg-primary/90 transition">
+                    Mettre à jour
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-white border border-red-200 rounded-2xl p-6 shadow-soft">
+        <h3 class="font-semibold text-red-600 mb-2">Supprimer le compte</h3>
+        <p class="text-sm text-muted mb-4">Cette action est irréversible.</p>
+
+        @php($delErrors = $errors->getBag('userDeletion'))
+
+        <form method="POST" action="{{ route('profile.destroy') }}" class="space-y-4">
+            @csrf
+            @method('DELETE')
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Confirmer avec votre mot de passe</label>
+                <input type="password" name="password" class="w-full px-3 py-2 rounded-xl border border-line bg-white" required>
+                @if ($delErrors->has('password'))
+                    <div class="text-red-600 text-sm mt-1">{{ $delErrors->first('password') }}</div>
                 @endif
-
-                <form method="POST" action="{{ route('profile.update') }}">
-                    @csrf
-                    @method('PATCH')
-
-                    <div class="mb-3">
-                        <label class="form-label">Nom</label>
-                        <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
-                        @error('name')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
-                        @error('email')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <button class="btn btn-accent">Enregistrer</button>
-                </form>
             </div>
-        </div>
 
-        <div class="col-lg-6">
-            <div class="card p-4">
-                <h3 class="mb-1">Mot de passe</h3>
-                <div class="text-muted mb-3">Mettez à jour votre mot de passe.</div>
-
-                @if (session('status') === 'password-updated')
-                    <div class="alert alert-success">Mot de passe mis à jour.</div>
-                @endif
-
-                @php($pwErrors = $errors->getBag('updatePassword'))
-
-                <form method="POST" action="{{ route('password.update') }}">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="mb-3">
-                        <label class="form-label">Mot de passe actuel</label>
-                        <input type="password" name="current_password" class="form-control" required>
-                        @if ($pwErrors->has('current_password'))
-                            <div class="text-danger small mt-1">{{ $pwErrors->first('current_password') }}</div>
-                        @endif
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Nouveau mot de passe</label>
-                        <input type="password" name="password" class="form-control" required>
-                        @if ($pwErrors->has('password'))
-                            <div class="text-danger small mt-1">{{ $pwErrors->first('password') }}</div>
-                        @endif
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Confirmer le mot de passe</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
-                        @if ($pwErrors->has('password_confirmation'))
-                            <div class="text-danger small mt-1">{{ $pwErrors->first('password_confirmation') }}</div>
-                        @endif
-                    </div>
-
-                    <button class="btn btn-accent">Mettre à jour</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="col-lg-12">
-            <div class="card p-4 border border-danger">
-                <h3 class="mb-1 text-danger">Supprimer le compte</h3>
-                <div class="text-muted mb-3">Cette action est irréversible.</div>
-
-                @php($delErrors = $errors->getBag('userDeletion'))
-
-                <form method="POST" action="{{ route('profile.destroy') }}">
-                    @csrf
-                    @method('DELETE')
-
-                    <div class="mb-3">
-                        <label class="form-label">Confirmer avec votre mot de passe</label>
-                        <input type="password" name="password" class="form-control" required>
-                        @if ($delErrors->has('password'))
-                            <div class="text-danger small mt-1">{{ $delErrors->first('password') }}</div>
-                        @endif
-                    </div>
-
-                    <button class="btn btn-outline-danger">Supprimer mon compte</button>
-                </form>
-            </div>
-        </div>
+            <button class="px-4 py-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50">
+                Supprimer mon compte
+            </button>
+        </form>
     </div>
 </div>
 
