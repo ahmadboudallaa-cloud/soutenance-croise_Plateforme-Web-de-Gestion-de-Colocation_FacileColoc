@@ -2,68 +2,64 @@
 
 @section('content')
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card p-4">
-                <div class="mb-3">
-                    <h2 class="mb-1">Créer un compte</h2>
-                    <div class="text-muted">Rejoins FacileColoc en quelques secondes</div>
-                </div>
-
-                <form method="POST" action="{{ route('register') }}">
-                    @csrf
-                    @if (request('invitation_token'))
-                        <input type="hidden" name="invitation_token" value="{{ request('invitation_token') }}">
-                    @endif
-
-                    <div class="mb-3">
-                        <label class="form-label">Nom</label>
-                        <input id="name" type="text" name="name" class="form-control"
-                               value="{{ old('name') }}" required autofocus autocomplete="name">
-                        @error('name')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input id="email" type="email" name="email" class="form-control"
-                               value="{{ old('email', request('email')) }}" required autocomplete="username">
-                        @error('email')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Mot de passe</label>
-                        <input id="password" type="password" name="password" class="form-control"
-                               required autocomplete="new-password">
-                        @error('password')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label">Confirmer le mot de passe</label>
-                        <input id="password_confirmation" type="password" name="password_confirmation" class="form-control"
-                               required autocomplete="new-password">
-                        @error('password_confirmation')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <button class="btn btn-accent w-100">Créer le compte</button>
-
-                    <div class="text-center mt-3">
-                        <a href="{{ route('login', ['invitation_token' => request('invitation_token'), 'email' => request('email')]) }}">
-                            Déjà inscrit ? Se connecter
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-semibold">Créer un compte</h1>
+        <p class="text-sm text-muted mt-1">Rejoins FacileColoc en quelques secondes.</p>
     </div>
+
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
+        @csrf
+        @if (request('invitation_token'))
+            <input type="hidden" name="invitation_token" value="{{ request('invitation_token') }}">
+        @endif
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Nom</label>
+            <input id="name" type="text" name="name" class="w-full px-3 py-2 rounded-xl border border-line bg-white"
+                   value="{{ old('name') }}" required autofocus autocomplete="name">
+            @error('name')
+                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Email</label>
+            <input id="email" type="email" name="email" class="w-full px-3 py-2 rounded-xl border border-line bg-white"
+                   value="{{ old('email', request('email')) }}" required autocomplete="username">
+            @error('email')
+                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Mot de passe</label>
+            <input id="password" type="password" name="password" class="w-full px-3 py-2 rounded-xl border border-line bg-white"
+                   required autocomplete="new-password">
+            @error('password')
+                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Confirmer le mot de passe</label>
+            <input id="password_confirmation" type="password" name="password_confirmation" class="w-full px-3 py-2 rounded-xl border border-line bg-white"
+                   required autocomplete="new-password">
+            @error('password_confirmation')
+                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <button class="w-full px-4 py-2 rounded-xl bg-primary text-white shadow-soft hover:bg-primary/90 transition">
+            Créer le compte
+        </button>
+
+        <div class="text-center text-sm">
+            <a href="{{ route('login', ['invitation_token' => request('invitation_token'), 'email' => request('email')]) }}" class="text-primary hover:underline">
+                Déjà inscrit ? Se connecter
+            </a>
+        </div>
+    </form>
 </div>
 
 @endsection
