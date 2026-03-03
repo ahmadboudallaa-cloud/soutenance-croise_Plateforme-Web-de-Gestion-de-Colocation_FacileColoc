@@ -95,11 +95,7 @@ Route::middleware(['auth', 'not_banned'])->group(function () {
         [InvitationController::class, 'destroy']
     )->name('colocations.invitations.destroy');
 
-    /*
-    |--------------------------------------------------------------------------
-    | EXPENSES
-    |--------------------------------------------------------------------------
-    */
+   
     Route::get(
         '/colocations/{colocation}/expenses/create',
         [ExpenseController::class, 'create']
