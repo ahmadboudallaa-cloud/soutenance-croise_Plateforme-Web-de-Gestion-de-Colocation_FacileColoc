@@ -17,10 +17,11 @@
         </a>
     </p>
 
-    <p>Si vous n€™êtes pas concerné, ignorez cet email.</p>
+    <p>Si vous n’êtes pas concerné, ignorez cet email.</p>
 
-    <p>€” FacileColoc</p>
+    <p>— FacileColoc</p>
 </body>
 </html>
+
 
 

@@ -62,7 +62,7 @@ class ColocationController extends Controller
                 ->withInput()
                 ->with(
                     'error',
-                    'DÃ©jÃ  une colocation active. Annulez ou quittez votre colocation avant dâ€™en crÃ©er une nouvelle.'
+                    'Déjà une colocation active. Annulez ou quittez votre colocation avant d’en créer une nouvelle.'
                 );
         }
 
@@ -96,7 +96,7 @@ class ColocationController extends Controller
 
         return redirect()
             ->route('colocations.show', $colocation)
-            ->with('success', 'Colocation modifiÃ©e.');
+            ->with('success', 'Colocation modifiée.');
     }
 
     public function show(Colocation $colocation)
@@ -113,7 +113,7 @@ class ColocationController extends Controller
 
         $members = $colocation->users()->whereNull('left_at')->get();
         $selectedMonth = request()->query('month');
-        $expensesQuery = $colocation->expenses()->with('payer');
+        $expensesQuery = $colocation->expenses()->with(['payer', 'category']);
         if ($selectedMonth) {
             $expensesQuery->whereYear('expense_date', substr($selectedMonth, 0, 4))
                 ->whereMonth('expense_date', substr($selectedMonth, 5, 2));
@@ -181,7 +181,7 @@ class ColocationController extends Controller
 
         if ($colocation->status === 'cancelled') {
             return redirect()->route('dashboard')
-                ->with('error', 'Cette colocation est dÃ©jÃ  annulÃ©e.');
+                ->with('error', 'Cette colocation est déjà annulée.');
         }
 
         $members = $colocation->users()->whereNull('left_at')->get();
@@ -196,7 +196,7 @@ class ColocationController extends Controller
 
         $colocation->delete();
         return redirect()->route('dashboard')
-            ->with('success', 'Colocation supprimÃ©e.');
+            ->with('success', 'Colocation supprimée.');
     }
 
     public function deactivate(Colocation $colocation)
@@ -205,13 +205,13 @@ class ColocationController extends Controller
 
         if ($colocation->status !== 'active') {
             return redirect()->route('dashboard')
-                ->with('error', 'Cette colocation nâ€™est pas active.');
+                ->with('error', 'Cette colocation n’est pas active.');
         }
 
         $colocation->update(['status' => 'inactive']);
 
         return redirect()->route('dashboard')
-            ->with('success', 'Colocation dÃ©sactivÃ©e.');
+            ->with('success', 'Colocation désactivée.');
     }
 
     public function leave(Colocation $colocation)
@@ -228,7 +228,7 @@ class ColocationController extends Controller
         $role = $membership->pivot->role ?? 'member';
         if ($role === 'owner') {
             return redirect()->route('colocations.show', $colocation)
-                ->with('error', 'Le propriÃ©taire ne peut pas quitter la colocation.');
+                ->with('error', 'Le propriétaire ne peut pas quitter la colocation.');
         }
 
         $members = $colocation->users()->whereNull('left_at')->get();
@@ -245,7 +245,7 @@ class ColocationController extends Controller
         ]);
 
         return redirect()->route('dashboard')
-            ->with('success', 'Vous avez quittÃ© la colocation.');
+            ->with('success', 'Vous avez quitté la colocation.');
     }
 
     public function removeMember(Colocation $colocation, \App\Models\User $user)
@@ -264,7 +264,7 @@ class ColocationController extends Controller
 
         if (($member->pivot->role ?? 'member') === 'owner') {
             return redirect()->route('colocations.show', $colocation)
-                ->with('error', 'Impossible de retirer le propriÃ©taire.');
+                ->with('error', 'Impossible de retirer le propriétaire.');
         }
 
         $members = $colocation->users()->whereNull('left_at')->get();
@@ -290,7 +290,7 @@ class ColocationController extends Controller
         ]);
 
         return redirect()->route('colocations.show', $colocation)
-            ->with('success', 'Membre retirÃ©.');
+            ->with('success', 'Membre retiré.');
     }
 
     public function transferOwner(Colocation $colocation, \App\Models\User $user)
@@ -309,7 +309,7 @@ class ColocationController extends Controller
 
         if (($member->pivot->role ?? 'member') === 'owner') {
             return redirect()->route('colocations.show', $colocation)
-                ->with('error', 'Ce membre est dÃ©jÃ  owner.');
+                ->with('error', 'Ce membre est déjà owner.');
         }
 
         $colocation->users()->updateExistingPivot(Auth::id(), [
@@ -321,7 +321,7 @@ class ColocationController extends Controller
         ]);
 
         return redirect()->route('colocations.show', $colocation)
-            ->with('success', 'RÃ´le owner transfÃ©rÃ©.');
+            ->with('success', 'Rôle owner transféré.');
     }
 
     private function calculateBalances($members, $expenses, $payments): array
@@ -358,4 +358,6 @@ class ColocationController extends Controller
         return $balances;
     }
 }
+
+
 

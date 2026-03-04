@@ -52,7 +52,7 @@
 
     @if ($isInactive)
         <div class="rounded-xl border border-line bg-primary px-4 py-3 text-white">
-            Colocation inactive : consultation de l€™historique uniquement.
+            Colocation inactive : consultation de l’historique uniquement.
         </div>
     @endif
 
@@ -103,13 +103,13 @@
                         <input type="email" name="email" placeholder="Email du membre"
                                class="flex-1 min-w-[240px] px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500" required>
                         <button class="px-4 py-2 rounded-xl bg-primary text-white shadow-none hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] transition hover:bg-primary/90 transition">
-                            Envoyer l€™invitation
+                            Envoyer l’invitation
                         </button>
                     </form>
 
                     @if (session('invite_link'))
                         <div class="text-sm text-white mb-3">
-                            Lien d€™invitation : <span class="font-medium text-ink">{{ session('invite_link') }}</span>
+                            Lien d’invitation : <span class="font-medium text-ink">{{ session('invite_link') }}</span>
                         </div>
                     @endif
 
@@ -140,7 +140,7 @@
             <div class="bg-primary border border-line rounded-2xl p-5 shadow-none hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] transition">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold">Dépenses</h3>
-                    <div class="text-sm text-white">Total : {{ number_format($expenses->sum('amount'), 2) }} ‚¬</div>
+                    <div class="text-sm text-white">Total : {{ number_format($expenses->sum('amount'), 2) }} DH</div>
                 </div>
 
                 <form method="GET" action="{{ route('colocations.show', $colocation->id) }}" class="flex flex-wrap gap-2 mb-4">
@@ -160,6 +160,7 @@
                             <tr class="border-b border-line">
                                 <th class="py-2 text-left">Titre</th>
                                 <th class="py-2 text-left">Montant</th>
+                                <th class="py-2 text-left">Categorie</th>
                                 <th class="py-2 text-left">Date</th>
                                 <th class="py-2 text-left">Payé par</th>
                                 <th class="py-2 text-right">Actions</th>
@@ -169,7 +170,8 @@
                             @foreach($expenses as $expense)
                                 <tr>
                                     <td class="py-3">{{ $expense->title }}</td>
-                                    <td class="py-3">{{ number_format($expense->amount,2) }} ‚¬</td>
+                                    <td class="py-3">{{ number_format($expense->amount,2) }} DH</td>
+                                    <td class="py-3">{{ $expense->category?->name ?? '-' }}</td>
                                     <td class="py-3">{{ $expense->expense_date }}</td>
                                     <td class="py-3">{{ $expense->payer->name ?? '-' }}</td>
                                     <td class="py-3 text-right">
@@ -181,7 +183,7 @@
                                                 <button class="px-2 py-1 rounded-lg border border-red-200 text-white hover:bg-red-50">Supprimer</button>
                                             </form>
                                         @else
-                                            <span class="text-white">€”</span>
+                                            <span class="text-white">—</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -200,7 +202,7 @@
                         <div class="flex items-center justify-between border border-line rounded-xl px-4 py-3 mb-2">
                             <div class="text-sm">
                                 <strong>{{ $s['from']->name }}</strong> doit payer <strong>{{ $s['to']->name }}</strong>
-                                €” {{ number_format($s['amount'],2) }} ‚¬
+                                — {{ number_format($s['amount'],2) }} DH
                             </div>
                             <form method="POST" action="{{ route('payments.store') }}" onsubmit="this.querySelector('button').disabled = true;">
                                 @csrf
@@ -221,6 +223,7 @@
 </div>
 
 @endsection
+
 
 
 

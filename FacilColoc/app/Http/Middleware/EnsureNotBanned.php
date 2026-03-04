@@ -14,10 +14,12 @@ class EnsureNotBanned
             auth()->logout();
 
             return redirect('/')
-                ->with('error', 'Votre compte a Ã©tÃ© dÃ©sactivÃ©.');
+                ->with('error', 'Votre compte a été désactivé.');
         }
 
         return $next($request);
     }
 }
+
+
 

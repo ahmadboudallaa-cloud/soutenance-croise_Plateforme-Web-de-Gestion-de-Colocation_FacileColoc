@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 
@@ -18,7 +18,7 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Montant (€)</label>
+                <label class="block text-sm font-medium mb-1">Montant (DH)</label>
                 <input type="number" step="0.01" name="amount" class="w-full px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500"
                        value="{{ old('amount', $expense->amount) }}" required>
             </div>
@@ -30,11 +30,23 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Paye par</label>
+                <label class="block text-sm font-medium mb-1">Payeur</label>
                 <select name="paid_by" class="w-full px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500" required>
                     @foreach($members as $member)
                         <option value="{{ $member->id }}" @selected(old('paid_by', $expense->paid_by) == $member->id)>
                             {{ $member->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Categorie</label>
+                <select name="category_id" class="w-full px-3 py-2 rounded-xl border border-line bg-white text-black placeholder-gray-500">
+                    <option value="">Aucune categorie</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" @selected(old('category_id', $expense->category_id) == $category->id)>
+                            {{ $category->name }}
                         </option>
                     @endforeach
                 </select>

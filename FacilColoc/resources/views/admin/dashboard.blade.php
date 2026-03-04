@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 
@@ -69,6 +69,14 @@
                 <div class="flex items-center justify-between">
                     <span>Colocations creees</span>
                     <span class="font-semibold">{{ $colocationsCount }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Colocations actives</span>
+                    <span class="font-semibold">{{ $activeColocationsCount }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Colocations inactives</span>
+                    <span class="font-semibold">{{ $inactiveColocationsCount }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span>Depenses totales</span>

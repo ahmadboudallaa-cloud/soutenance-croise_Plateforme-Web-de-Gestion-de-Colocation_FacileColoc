@@ -4,11 +4,40 @@ namespace App\Http\Controllers;
 
 use App\Models\Expense;
 use App\Models\Colocation;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ExpenseController extends Controller
 {
+    private function getCategories()
+    {
+        $categories = Category::query()
+            ->orderBy('name')
+            ->get();
+
+        if ($categories->isNotEmpty()) {
+            return $categories;
+        }
+
+        $defaults = [
+            'Alimentation',
+            'Loyer',
+            'Internet',
+            'Transport',
+            'Factures',
+            'Autre',
+        ];
+
+        foreach ($defaults as $name) {
+            Category::firstOrCreate(['name' => $name]);
+        }
+
+        return Category::query()
+            ->orderBy('name')
+            ->get();
+    }
+
     private function ensureMember(Colocation $colocation): void
     {
         $isMember = $colocation->users()
@@ -37,7 +66,9 @@ class ExpenseController extends Controller
             ->whereNull('left_at')
             ->get();
 
-        return view('expenses.create', compact('colocation', 'members'));
+        $categories = $this->getCategories();
+
+        return view('expenses.create', compact('colocation', 'members', 'categories'));
     }
 
     
@@ -50,6 +81,7 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
             'expense_date' => 'required|date',
             'paid_by' => 'required|exists:users,id',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         Expense::create([
@@ -58,11 +90,12 @@ class ExpenseController extends Controller
             'amount' => $request->amount,
             'expense_date' => $request->expense_date,
             'paid_by' => $request->paid_by,
+            'category_id' => $request->category_id,
         ]);
 
         return redirect()
             ->route('colocations.show', $colocation->id)
-            ->with('success', 'DÃ©pense ajoutÃ©e.');
+            ->with('success', 'Dépense ajoutée.');
     }
 
     
@@ -75,7 +108,9 @@ class ExpenseController extends Controller
             ->whereNull('left_at')
             ->get();
 
-        return view('expenses.edit', compact('colocation', 'expense', 'members'));
+        $categories = $this->getCategories();
+
+        return view('expenses.edit', compact('colocation', 'expense', 'members', 'categories'));
     }
 
     
@@ -89,6 +124,7 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
             'expense_date' => 'required|date',
             'paid_by' => 'required|exists:users,id',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         $expense->update([
@@ -96,11 +132,12 @@ class ExpenseController extends Controller
             'amount' => $request->amount,
             'expense_date' => $request->expense_date,
             'paid_by' => $request->paid_by,
+            'category_id' => $request->category_id,
         ]);
 
         return redirect()
             ->route('colocations.show', $colocation->id)
-            ->with('success', 'DÃ©pense modifiÃ©e.');
+            ->with('success', 'Dépense modifiée.');
     }
 
     
@@ -113,7 +150,9 @@ class ExpenseController extends Controller
 
         return redirect()
             ->route('colocations.show', $colocation->id)
-            ->with('success', 'DÃ©pense supprimÃ©e.');
+            ->with('success', 'Dépense supprimée.');
     }
 }
+
+
 

@@ -11,7 +11,8 @@ class Expense extends Model
         'title',
         'amount',
         'expense_date',
-        'paid_by'
+        'paid_by',
+        'category_id',
     ];
 
     protected $casts = [
@@ -27,5 +28,10 @@ class Expense extends Model
     public function payer()
     {
         return $this->belongsTo(User::class, 'paid_by');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

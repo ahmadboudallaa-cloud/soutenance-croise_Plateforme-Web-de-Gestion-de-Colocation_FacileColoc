@@ -31,7 +31,7 @@ class InvitationController extends Controller
                 ->exists();
 
             if ($alreadyMember) {
-                return back()->with('error', 'Cet utilisateur est dÃ©jÃ  membre de la colocation.');
+                return back()->with('error', 'Cet utilisateur est déjà membre de la colocation.');
             }
         }
 
@@ -42,7 +42,7 @@ class InvitationController extends Controller
 
         if ($existingInvitation) {
             return back()
-                ->with('error', 'Une invitation est dÃ©jÃ  en attente pour cet email.')
+                ->with('error', 'Une invitation est déjà en attente pour cet email.')
                 ->with('invite_link', route('invitations.show', $existingInvitation->token));
         }
 
@@ -58,9 +58,9 @@ class InvitationController extends Controller
 
         try {
             Mail::to($email)->send(new InvitationMail($invitation));
-            $message = 'Invitation crÃ©Ã©e et envoyÃ©e par email.';
+            $message = 'Invitation créée et envoyée par email.';
         } catch (\Throwable $e) {
-            $message = 'Invitation crÃ©Ã©e, mais lâ€™envoi email a Ã©chouÃ©.';
+            $message = 'Invitation créée, mais l’envoi email a échoué.';
         }
 
         return back()
@@ -83,17 +83,17 @@ class InvitationController extends Controller
 
         if ($invitation->status !== 'pending') {
             return redirect()->route('dashboard')
-                ->with('error', 'Cette invitation nâ€™est plus valide.');
+                ->with('error', 'Cette invitation n’est plus valide.');
         }
 
         if ($invitation->expires_at && $invitation->expires_at->isPast()) {
             return redirect()->route('dashboard')
-                ->with('error', 'Cette invitation a expirÃ©.');
+                ->with('error', 'Cette invitation a expiré.');
         }
 
         if (strtolower(Auth::user()->email) !== strtolower($invitation->email)) {
             return redirect()->route('dashboard')
-                ->with('error', 'Cette invitation ne correspond pas Ã  votre email.');
+                ->with('error', 'Cette invitation ne correspond pas à votre email.');
         }
 
         $hasActiveColocation = Auth::user()
@@ -104,14 +104,14 @@ class InvitationController extends Controller
 
         if ($hasActiveColocation) {
             return redirect()->route('dashboard')
-                ->with('error', 'Vous avez dÃ©jÃ  une colocation active.');
+                ->with('error', 'Vous avez déjà une colocation active.');
         }
 
         $colocation = $invitation->colocation;
 
         if ($colocation->status !== 'active') {
             return redirect()->route('dashboard')
-                ->with('error', 'Cette colocation est annulÃ©e.');
+                ->with('error', 'Cette colocation est annulée.');
         }
 
         $alreadyMember = $colocation->users()
@@ -126,7 +126,7 @@ class InvitationController extends Controller
             ]);
 
             return redirect()->route('colocations.show', $colocation)
-                ->with('success', 'Vous Ãªtes dÃ©jÃ  membre de cette colocation.');
+                ->with('success', 'Vous êtes déjà membre de cette colocation.');
         }
 
         $colocation->users()->attach(Auth::id(), [
@@ -140,7 +140,7 @@ class InvitationController extends Controller
         ]);
 
         return redirect()->route('colocations.show', $colocation)
-            ->with('success', 'Invitation acceptÃ©e.');
+            ->with('success', 'Invitation acceptée.');
     }
 
     public function decline(string $token)
@@ -149,12 +149,12 @@ class InvitationController extends Controller
 
         if ($invitation->status !== 'pending') {
             return redirect()->route('dashboard')
-                ->with('error', 'Cette invitation nâ€™est plus valide.');
+                ->with('error', 'Cette invitation n’est plus valide.');
         }
 
         if (strtolower(Auth::user()->email) !== strtolower($invitation->email)) {
             return redirect()->route('dashboard')
-                ->with('error', 'Cette invitation ne correspond pas Ã  votre email.');
+                ->with('error', 'Cette invitation ne correspond pas à votre email.');
         }
 
         $invitation->update([
@@ -163,7 +163,7 @@ class InvitationController extends Controller
         ]);
 
         return redirect()->route('dashboard')
-            ->with('success', 'Invitation refusÃ©e.');
+            ->with('success', 'Invitation refusée.');
     }
 
     private function authorizeOwner(Colocation $colocation): void
@@ -189,7 +189,9 @@ class InvitationController extends Controller
 
         $invitation->delete();
 
-        return back()->with('success', 'Invitation supprimÃ©e.');
+        return back()->with('success', 'Invitation supprimée.');
     }
 }
+
+
 

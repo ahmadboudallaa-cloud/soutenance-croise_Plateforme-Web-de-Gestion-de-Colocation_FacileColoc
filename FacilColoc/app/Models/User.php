@@ -59,7 +59,7 @@ public function colocations()
 {
     return $this->belongsToMany(Colocation::class)
     ->withPivot(['role','left_at'])
-    ->withTimestamps();   // âš ï¸ ICI
+    ->withTimestamps();
 }
 public function expensesPaid()
 {

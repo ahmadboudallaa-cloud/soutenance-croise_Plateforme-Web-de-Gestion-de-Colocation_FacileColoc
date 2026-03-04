@@ -24,13 +24,17 @@ class AdminController extends Controller
         $this->requireAdmin();
 
         $usersCount = User::count();
-        $colocationsCount = Colocation::count();
+        $colocationsCount = Colocation::where('status', '!=', 'cancelled')->count();
+        $activeColocationsCount = Colocation::where('status', 'active')->count();
+        $inactiveColocationsCount = Colocation::where('status', 'inactive')->count();
         $expensesCount = Expense::count();
         $bannedCount = User::whereNotNull('banned_at')->count();
 
         return view('admin.dashboard', compact(
             'usersCount',
             'colocationsCount',
+            'activeColocationsCount',
+            'inactiveColocationsCount',
             'expensesCount',
             'bannedCount'
         ));
@@ -70,7 +74,7 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'Compte crÃ©Ã©.');
+            ->with('success', 'Compte créé.');
     }
 
     public function edit(User $user)
@@ -104,7 +108,7 @@ class AdminController extends Controller
         $user->update($data);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'Compte modifiÃ©.');
+            ->with('success', 'Compte modifié.');
     }
 
     public function destroy(User $user)
@@ -129,12 +133,12 @@ class AdminController extends Controller
         $hasExpenses = \App\Models\Expense::where('paid_by', $user->id)->exists();
 
         if ($hasPayments || $hasExpenses) {
-            return back()->with('error', 'Impossible de supprimer ce compte : il possÃ¨de des dÃ©penses ou des paiements.');
+            return back()->with('error', 'Impossible de supprimer ce compte : il possède des dépenses ou des paiements.');
         }
 
         $user->delete();
 
-        return back()->with('success', 'Compte supprimÃ©.');
+        return back()->with('success', 'Compte supprimé.');
     }
 
     public function ban(User $user)
@@ -156,7 +160,7 @@ class AdminController extends Controller
             'banned_at' => null
         ]);
 
-        return back()->with('success', 'Utilisateur dÃ©banni');
+        return back()->with('success', 'Utilisateur débanni');
     }
 
     public function promote(User $user)
@@ -165,7 +169,7 @@ class AdminController extends Controller
 
         $user->update(['is_global_admin' => true]);
 
-        return back()->with('success', 'RÃ´le admin attribuÃ©.');
+        return back()->with('success', 'Rôle admin attribué.');
     }
 
     public function demote(User $user)
@@ -173,17 +177,20 @@ class AdminController extends Controller
         $this->requireAdmin();
 
         if ($user->id === Auth::id()) {
-            return back()->with('error', 'Vous ne pouvez pas vous retirer votre propre rÃ´le admin.');
+            return back()->with('error', 'Vous ne pouvez pas vous retirer votre propre rôle admin.');
         }
 
         $adminsCount = User::where('is_global_admin', true)->count();
         if ($adminsCount <= 1) {
-            return back()->with('error', 'Impossible de retirer le rÃ´le du dernier admin.');
+            return back()->with('error', 'Impossible de retirer le rôle du dernier admin.');
         }
 
         $user->update(['is_global_admin' => false]);
 
-        return back()->with('success', 'RÃ´le admin retirÃ©.');
+        return back()->with('success', 'Rôle admin retiré.');
     }
 }
+
+
+
 
