@@ -145,6 +145,10 @@ class AdminController extends Controller
     {
         $this->requireAdmin();
 
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Vous ne pouvez pas vous bannir vous-même.');
+        }
+
         $user->update([
             'banned_at' => now()
         ]);
